@@ -4,7 +4,14 @@
       <span class='font-weight-bold headline'>{{ post.author.username }}</span>
       <span class='ml-2 secondary--text'>{{ new Date(post.dateCreated) | moment("from") }}</span>
       <v-spacer></v-spacer>
-      <v-btn class='primary--text' round outline>Follow</v-btn>
+
+      <v-btn round :outline='!post.author.isFollowing' :class='{
+        "primary--text": !post.author.isFollowing,
+        "primary": post.author.isFollowing
+      }'>
+        {{ post.author.isFollowing ? 'Unfollow' : 'Follow' }}
+      </v-btn>
+
     </v-card-title>
     <v-divider></v-divider>
     <v-card-text>

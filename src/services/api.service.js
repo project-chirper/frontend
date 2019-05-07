@@ -32,7 +32,7 @@ export default {
       res => res, // response handler
       err =>  { // error handler
         if (err.response && handleResponse(err.response)) return Promise.resolve(err.response) 
-        else if (err.request) alert("Could not connect to API gateway")
+        else if (!err.response && err.request) alert("Could not connect to API gateway")
         return Promise.reject(err)
       }
     )
