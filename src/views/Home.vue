@@ -1,18 +1,20 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-container class="px-3 mt-1" :class='{ "mt-5": $vuetify.breakpoint.mdAndUp }' grid-list-xl>
+    <v-layout row wrap justify-center>
+      <v-flex xs12 md10 lg8 xl4>
+        <timeline/>
+      </v-flex>
+    </v-layout>
+
+  </v-container>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Timeline from '@/components/Timeline/'
 
 export default {
-  name: 'home',
   components: {
-    HelloWorld
+    Timeline
   }
 }
 </script>

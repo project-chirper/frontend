@@ -1,19 +1,15 @@
-FROM node:latest
-
-RUN npm install -g http-server
-
+# build stage
+FROM node:latest as build-stage
 WORKDIR /app
-
-COPY package.json /app
-
+COPY package*.json ./
 RUN npm install
-
-COPY . /app
-
-ENV API http://api-gateway:3001/
-
+COPY . .
+ENV VUE_APP_API /api
 RUN npm run build
 
+# production stage
+FROM nginx:latest as production-stage
+COPY --from=build-stage /app/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build-stage /app/dist /usr/share/nginx/html
 EXPOSE 80
-
-CMD [ "http-server", "dist" ]
+CMD ["nginx", "-g", "daemon off;"]
