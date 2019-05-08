@@ -22,9 +22,22 @@
 
       <p class='headline'>{{ post.body.message }}</p>
 
-      <p class='caption'>{{ post.dateCreated | moment("dddd, MMMM Do YYYY") }}</p>
+      <p class='caption mb-0'>{{ post.dateCreated | moment("dddd, MMMM Do YYYY") }}</p>
 
     </v-card-text>
+
+    <v-divider/>
+
+    <v-card-actions>
+      <ViewRepliesBtn :count='post.stats.replies'/>
+      <RepostBtn :count='post.stats.reposts'/>
+      <LikeBtn 
+        :hasLiked='post.hasLiked'
+        :postId='post.id'
+        :count='post.stats.likes'
+        @click='toggleLike()'
+      />
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -32,10 +45,16 @@
 import { mapActions } from 'vuex'
 import { TOGGLE_USER_FOLLOW } from '@/store/actions.type'
 
+import LikeBtn from '../Buttons/LikeBtn'
+import RepostBtn from '../Buttons/RepostBtn'
+import ViewRepliesBtn from '../Buttons/ViewRepliesBtn'
+
 export default {
   props: {
-    post: Object,
-    replies: Array
+    post: Object
+  },
+  components: {
+    LikeBtn, RepostBtn, ViewRepliesBtn
   },
   methods: {
     ...mapActions({
@@ -44,6 +63,10 @@ export default {
     followUser() {
       this.toggleFollow(this.post.author.id)
       this.post.author.isFollowing = !this.post.author.isFollowing
+    },
+    toggleLike() {
+      this.post.hasLiked = !this.post.hasLiked
+      this.post.hasLiked ? this.post.stats.likes++ : this.post.stats.likes--
     }
   }
 }

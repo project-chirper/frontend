@@ -1,22 +1,17 @@
 <template>
   <div>
-    <Post 
-      v-if='post.type === "PostReply" && depth===0' 
-      :post='post.body.replyingTo' :depth='depth+1'
-      class='reply-link'
-    />
-
     <v-dialog width='700' full-width>
       <Base :post='post' @loadReplies='loadReplies()' slot='activator'/>
-      <ModalView :post='post' :replies='replies'/>
+      <Modal :post='post' :replies='replies'/>
     </v-dialog>
 
+		<div>{{ post.replies }}</div>
   </div>
 </template>
 
 <script>
 import Base from './Base'
-import ModalView from './ModalView'
+import Modal from './Modal'
 
 import { mapActions } from 'vuex'
 import { FETCH_REPLIES } from '@/store/actions.type'
@@ -31,7 +26,7 @@ export default {
     }
   },
   components: {
-    Base, ModalView
+    Base, Modal
   },
   data() {
     return {

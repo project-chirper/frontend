@@ -1,7 +1,4 @@
-import ApiService from '../services/api.service'
 import PostService from '../services/post.service'
-
-import store from '../store/index'
 
 import {
   FETCH_TIMELINE, FETCH_UPDATES, TOGGLE_POST_LIKE, FETCH_REPLIES
@@ -17,8 +14,7 @@ const state = {
 
 const getters = {
   timeline: state => {
-    //let postReplyIds = (state.timeline.filter(post => post.type === 'PostReply')).map(post => post.body.replyingTo.id)
-    return state.timeline//.filter(post => postReplyIds.indexOf(post.id) < 0)
+		return state.timeline
   }
 }
 

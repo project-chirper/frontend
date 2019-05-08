@@ -13,7 +13,6 @@
         v-if='post.type==="PostReply"'
       >replying to {{ post.body.replyingTo.author.username }}</span>
       
-      
       <p class='mb-1 mt-2'>{{ post.body.message }}</p>
     </v-card-text>
 
@@ -21,9 +20,10 @@
       <ViewRepliesBtn :count='post.stats.replies' @click='$emit("loadReplies")'/>
       <RepostBtn :count='post.stats.reposts'/>
       <LikeBtn 
-        :hasLiked='post.hasLiked' 
-        :count='post.stats.likes'
-        @click='likePost()'
+        :hasLiked='post.hasLiked'
+        :postId='post.id'
+        :count='post.stats.likes'  
+        @click='toggleLike()'    
       />
     </v-card-actions>
 
@@ -33,7 +33,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { TOGGLE_POST_LIKE } from '@/store/actions.type'
+//import { } from '@/store/actions.type'
 
 import LikeBtn from './Buttons/LikeBtn'
 import RepostBtn from './Buttons/RepostBtn'
@@ -54,13 +54,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions({
-      toggleLike: TOGGLE_POST_LIKE
-    }),
-    likePost() {
-      this.toggleLike(this.post.id)
+    toggleLike() {
       this.post.hasLiked = !this.post.hasLiked
-      if (this.post.hasLiked) this.post.stats.likes++; else this.post.stats.likes--
+      this.post.hasLiked ? this.post.stats.likes++ : this.post.stats.likes--
     }
   }
 }
