@@ -1,9 +1,11 @@
 import ApiService from '../services/api.service'
 import AuthService from '../services/auth.service'
+import UserService from '../services/user.service'
 import JwtService from '../services/jwt.service'
 
 import {
-  LOGIN, LOGOUT, REGISTER, CHECK_AUTH
+  LOGIN, LOGOUT, REGISTER, CHECK_AUTH, 
+  TOGGLE_USER_FOLLOW
 } from './actions.type'
 
 import {
@@ -54,6 +56,16 @@ const actions = {
         if (status === 200) context.commit(SET_AUTH, data)
     }
     return true
+  },
+
+  /**
+   * @desc Follows a user
+   * @param userId The user id to follow
+   * @return True or false
+   */
+  async [TOGGLE_USER_FOLLOW](context, userId) {
+    let response = await UserService.followUser(userId)
+    return response
   }
 }
 

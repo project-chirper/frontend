@@ -13,3 +13,6 @@ export const FETCH_TIMELINE = "fetchTimeline"
 export const FETCH_UPDATES = "fetchUpdates"
 export const TOGGLE_POST_LIKE = "togglePostLike"
 export const FETCH_REPLIES = "fetchReplies"
+
+// Users
+export const TOGGLE_USER_FOLLOW = "toggleUserFollow"
