@@ -22,7 +22,7 @@
 
       <p class='headline'>{{ post.body.message }}</p>
 
-      <p class='caption mb-0'>{{ post.dateCreated | moment("dddd, MMMM Do YYYY") }}</p>
+      <p class='caption mb-0 secondary--text'>{{ post.dateCreated | moment("dddd, MMMM Do YYYY") }}</p>
 
     </v-card-text>
 

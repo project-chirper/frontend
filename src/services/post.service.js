@@ -34,5 +34,13 @@ export default {
   async fetchReplies(postId) {
     let { status, data } = await ApiService.get(`post/${postId}/replies`)
     return { ok: status === 200, data }
-  }
+	},
+	/**
+	 * @desc Fetches a Post
+	 * @param postId Post ID to fetch
+	 */
+	async fetchPost(postId) {
+		let { status, data } = await ApiService.get(`post/${postId}`)
+		return { ok: status === 200, data }
+	}
 }

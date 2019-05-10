@@ -1,7 +1,7 @@
 import PostService from '../services/post.service'
 
 import {
-  FETCH_TIMELINE, FETCH_UPDATES, TOGGLE_POST_LIKE, FETCH_REPLIES
+  FETCH_TIMELINE, FETCH_UPDATES, TOGGLE_POST_LIKE, FETCH_REPLIES, FETCH_POST
 } from './actions.type'
 
 import {
@@ -25,13 +25,13 @@ const actions = {
       context.state.timeline[0] ? context.state.timeline[0].id : undefined
     )
     if (ok) context.commit(TIMELINE_APPEND, data.posts)
-    return ok
+    else return false
   },
   async [FETCH_UPDATES](context) {
     if (!context.state.timeline[0]) return false
     let { ok, data } = await PostService.fetchUpdates(context.state.timeline[0].id)
     if (ok) context.commit(TIMELINE_PREPEND, data.posts)
-    return ok
+    else return false
   },
   async [TOGGLE_POST_LIKE](context, postId) {
     let ok = await PostService.likePost(postId)
@@ -42,8 +42,13 @@ const actions = {
     if (ok) return data.replies.map(reply => {
       reply.body.replyingTo = data.replyingTo
       return reply
-    })
-  }
+    }); else return false
+	},
+	async [FETCH_POST](context, postId) {
+		let { ok, data } = await PostService.fetchPost(postId)
+		if (ok) return data
+		else return false
+	}
 }
 
 const mutations = {
