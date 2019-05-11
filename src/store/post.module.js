@@ -1,5 +1,7 @@
 import PostService from '../services/post.service'
 
+import Cache from '../common/Cache'
+
 import {
   FETCH_TIMELINE, FETCH_UPDATES, TOGGLE_POST_LIKE, FETCH_REPLIES, FETCH_POST
 } from './actions.type'
@@ -9,7 +11,8 @@ import {
 } from './mutations.type'
 
 const state = {
-  timeline: []
+  timeline: [],
+  cache: new Cache("id")
 }
 
 const getters = {
@@ -53,10 +56,12 @@ const actions = {
 
 const mutations = {
   [TIMELINE_APPEND](state, posts) {
-    state.timeline = state.timeline.concat(posts)
+    state.timeline = state.timeline.concat(posts) // append to timeline
+    state.cache.addMany(posts) // Add to cache
   },
   [TIMELINE_PREPEND](state, posts) {
-    state.timeline = posts.concat(state.timeline)
+    state.timeline = posts.concat(state.timeline) // prepend to timeline
+    state.cache.addMany(posts) // Add to cache
   }
 }
 
