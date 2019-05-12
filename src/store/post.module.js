@@ -1,6 +1,6 @@
 import PostService from '../services/post.service'
 
-import Cache from '../common/Cache'
+import Cache from '@mattl019/objectset'
 
 import {
   FETCH_TIMELINE, FETCH_UPDATES, TOGGLE_POST_LIKE, FETCH_REPLIES, FETCH_POST
