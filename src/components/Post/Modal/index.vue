@@ -1,7 +1,10 @@
 <template>
-  <div>
-    <v-progress-linear v-if='loading' class='ma-0' indeterminate></v-progress-linear>
+	
+	<v-card v-if='loading' class='pa-2 text-xs-center'>
+  	<v-progress-circular class='ma-0 primary--text' indeterminate></v-progress-circular>
+	</v-card>
 
+  <div v-else>
     <!-- Previously Loaded Posts -->
     <div class='mb-0' v-if='previousPosts.length' style='cursor:pointer' title='Click to view replies'>
       <Post v-for='(previousPost, index) in previousPosts' :key='previousPost.id' :post='previousPost' view='Reply' @click.native='changeFocus(previousPost, index)'/>

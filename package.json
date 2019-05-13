@@ -7,7 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@mattl019/objectset": "^1.0.1",
+    "@mattl019/objectset": "^1.0.3",
     "axios": "^0.18.0",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
