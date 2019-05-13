@@ -3,7 +3,11 @@ import PostService from '../services/post.service'
 import Cache from '@mattl019/objectset'
 
 import {
-  FETCH_TIMELINE, FETCH_UPDATES, TOGGLE_POST_LIKE, FETCH_REPLIES, FETCH_POST
+	FETCH_TIMELINE,
+	FETCH_UPDATES, 
+	TOGGLE_POST_LIKE, 
+	FETCH_REPLIES, 
+	FETCH_POST
 } from './actions.type'
 
 import {
@@ -11,7 +15,11 @@ import {
 } from './mutations.type'
 
 const state = {
-  timeline: [],
+	timeline: [],
+	control: {
+		page: 0,
+		firstPostId: undefined
+	},
   cache: new Cache("id")
 }
 
@@ -22,12 +30,12 @@ const getters = {
 }
 
 const actions = {
-  async [FETCH_TIMELINE](context, offset=0) {
+  async [FETCH_TIMELINE](context) {
     let { ok, data } = await PostService.fetchTimeline(
-      offset, 
-      context.state.timeline[0] ? context.state.timeline[0].id : undefined
+      context.state.control.page,
+      context.state.control.firstPostId
     )
-    if (ok) context.commit(TIMELINE_APPEND, data.posts)
+		if (ok) context.commit(TIMELINE_APPEND, data.posts)
     else return false
   },
   async [FETCH_UPDATES](context) {
@@ -56,6 +64,9 @@ const actions = {
 
 const mutations = {
   [TIMELINE_APPEND](state, posts) {
+		if (!state.control.firstPostId) state.control.firstPostId = posts[0].id
+		state.control.page++ // increase page
+
     state.timeline = state.timeline.concat(posts) // append to timeline
     state.cache.addMany(posts) // Add to cache
   },

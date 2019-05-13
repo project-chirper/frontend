@@ -27,6 +27,10 @@
       <Modal :focusedPost='focusedPost'/>
     </v-dialog>
 
+		<v-btn round class='white--text primary mt-4' flat @click='fetchTimeline()'>
+			Load more
+		</v-btn>
+
   </div>
 </template>
 

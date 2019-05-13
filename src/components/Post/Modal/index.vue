@@ -1,5 +1,4 @@
 <template>
-	
 	<v-card v-if='loading' class='pa-2 text-xs-center'>
   	<v-progress-circular class='ma-0 primary--text' indeterminate></v-progress-circular>
 	</v-card>
