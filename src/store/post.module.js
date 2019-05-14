@@ -35,13 +35,19 @@ const actions = {
       context.state.control.page,
       context.state.control.firstPostId
     )
-		if (ok) context.commit(TIMELINE_APPEND, data.posts)
+		if (ok) {
+      context.commit(TIMELINE_APPEND, data.posts)
+      return data.posts.length
+    }
     else return false
   },
   async [FETCH_UPDATES](context) {
     if (!context.state.timeline[0]) return false
     let { ok, data } = await PostService.fetchUpdates(context.state.timeline[0].id)
-    if (ok) context.commit(TIMELINE_PREPEND, data.posts)
+    if (ok) {
+      context.commit(TIMELINE_PREPEND, data.posts)
+      return data.posts.length
+    }
     else return false
   },
   async [TOGGLE_POST_LIKE](context, postId) {

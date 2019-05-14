@@ -14,7 +14,7 @@
       {{ paragraph }}
     </p>
 
-    <p class='caption secondary--text'>Chirper is a project built for educational purposes by Matthew Lang aka MattL019.</p>
+    <p class='caption secondary--text'>Bitter is a project built for educational purposes by Matthew Lang aka MattL019.</p>
   </div>
 </template>
 
@@ -26,12 +26,12 @@ export default {
   },
   computed: {
     header: function() {
-      return this.type === 'login' ? 'Welcome back!' : 'Welcome to Chirper!'
+      return this.type === 'login' ? 'Welcome back!' : 'Welcome to Bitter!'
     },
     paragraph: function() {
       return this.type === 'login' ?
-        'We\'re glad to see you back so soon.' :
-        'Chirper is a social network platform. Create, like and share posts. See a timeline of posts from everyone you follow.'
+        'Came for a moan, have you?' :
+        'Bitter is a social network platform solely created for people to moan.'
     }
   }
 }

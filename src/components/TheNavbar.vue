@@ -1,6 +1,6 @@
 <template>
   <v-toolbar app dense flat color='secondary--text toolbar'>
-    <v-toolbar-title class='headline white--text font-weight-light'>Chirper</v-toolbar-title>
+    <v-toolbar-title class='headline white--text font-weight-light'>Bitter</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class='hidden-sm-and-down'>
       <v-btn flat
