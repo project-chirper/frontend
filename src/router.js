@@ -19,20 +19,20 @@ export const router = new Router({
       name: 'login',
       component: () => import('./views/Logreg'),
       props: { action: 'login' },
-      meta: { title: 'Chirper Login', requiresNoAuth: true }
+      meta: { title: 'Bitter Login', requiresNoAuth: true }
     },
     {
       path: '/register',
       name: 'register',
       component: () => import('./views/Logreg'),
       props: { action: 'register' },
-      meta: { title: 'Chirper Login', requiresNoAuth: true }
+      meta: { title: 'Bitter Login', requiresNoAuth: true }
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title ? to.meta.title : 'Chirper'
+  document.title = to.meta.title ? to.meta.title : 'Bitter'
 
   // Check for protected routes
   let isAuthed = store.state.user.isAuthed // if user is authed or not

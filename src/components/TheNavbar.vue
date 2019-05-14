@@ -1,6 +1,6 @@
 <template>
-  <v-toolbar app dense flat color='secondary--text toolbar'>
-    <v-toolbar-title class='headline white--text font-weight-light'>Bitter</v-toolbar-title>
+  <v-toolbar app dense flat color='toolbar'>
+    <v-toolbar-title class='headline primary--text font-weight-light'>Bitter</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class='hidden-sm-and-down'>
       <v-btn flat
@@ -8,7 +8,7 @@
         :key='key'
         router :to='nav.route'
         :title='nav.desc'
-        class='white--text font-weight-bold'
+        class='font-weight-bold'
         @click='navClick(nav)'>
         <span>{{ typeof nav.name === 'function' ? nav.name() : nav.name }}</span>
         <v-icon right v-if='nav.icon'>{{ nav.icon }}</v-icon>
@@ -16,7 +16,7 @@
     </v-toolbar-items>
 
     <v-menu class='hidden-md-and-up' transition='slide-y-transition' bottom offset-y>
-      <v-toolbar-side-icon slot='activator' class='white--text'></v-toolbar-side-icon>
+      <v-toolbar-side-icon slot='activator' class='primary--text'></v-toolbar-side-icon>
 
       <v-list>
         <v-list-tile v-for='(nav, key) in navListAvailable' :key='key' router :to ='nav.route' :title='nav.desc' @click='navClick(nav)'>
@@ -76,7 +76,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.toolbar {
-  background-color: rgba(255, 86, 86, .9)
-}
+.toolbar { background-color: rgba(#212121, .9); }
 </style>

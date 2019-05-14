@@ -8,7 +8,7 @@
         <!-- Username -->
         <v-text-field box validate-on-blur
           label='Username'
-          color='secondary'
+          color='accent'
           append-icon='person'
           :rules='rules[type].username'
           required
@@ -20,7 +20,7 @@
         <!-- Email -->
         <v-text-field v-if='type === "register"' box validate-on-blur
           label='Email'
-          color='secondary'
+          color='accent'
           append-icon='email'
           :rules='rules[type].email'
           required
@@ -32,7 +32,7 @@
         <!-- Password -->
         <v-text-field box validate-on-blur
           label='Password'
-          color='secondary'
+          color='accent'
           type='password'
           append-icon='vpn_key'
           :rules='rules[type].password'
@@ -45,7 +45,7 @@
         <!-- Password -->
         <v-text-field v-if='type === "register"' box validate-on-blur
           label='Confirm Password'
-          color='secondary'
+          color='accent'
           type='password'
           append-icon='confirmation_number'
           :rules='rules[type].confirmPassword'
@@ -54,8 +54,8 @@
           aria-label='new-password'>
         </v-text-field>
 
-        <v-alert :value='errors.length' class='my-3' type='error' color='white'>
-          <v-chip color='primary' class='white--text' v-for='error in errors' :key='error'>{{ error }}</v-chip>
+        <v-alert :value='errors.length' class='my-3' type='error'>
+          <v-chip v-for='error in errors' :key='error'>{{ error }}</v-chip>
         </v-alert>
 
         <v-layout row wrap class='px-4'>

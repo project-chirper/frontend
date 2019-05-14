@@ -1,12 +1,12 @@
 <template>
-  <v-card class='grey lighten-5'>
+  <v-card>
 
-    <v-card-title class='grey lighten-4' :class='{ "py-2": view === "Timeline" || "Reply", "py-3": view === "Focused" }'>
+    <v-card-title :class='{ "py-2": view === "Timeline" || "Reply", "py-3": view === "Focused" }'>
       <span :class='{
         "subheading": view === "Timeline",
         "title": view === "Focused"
         }' class='font-weight-bold'>{{ post.author.username }}</span>
-      <span class='caption secondary--text ml-2'>{{ new Date(post.dateCreated) | moment("from") }}</span>
+      <span class='caption accent--text ml-2'>{{ new Date(post.dateCreated) | moment("from") }}</span>
 
       <v-spacer></v-spacer>
 
@@ -19,7 +19,7 @@
     <v-divider></v-divider>
 
     <v-card-text class='pt-2 pt-0' :class='{ "pb-2": view === "Reply" }'>
-      <span v-if='post.type === "PostReply"' class='secondary--text' :class='{ "caption": view === "Reply" }'>
+      <span v-if='post.type === "PostReply"' class='accent--text' :class='{ "caption": view === "Reply" }'>
         replying to {{ post.body.replyingTo.author.username }}
       </span>
 
@@ -30,24 +30,24 @@
 
     <v-card-actions :class='{ "py-1": view === "Reply" }'>
 
-      <v-btn small flat color='secondary' title='View Replies'>
+      <v-btn small flat color='accent' title='View Replies'>
         <v-icon left :small='view === "Reply"'>list</v-icon>
         {{ post.stats.replies }}
       </v-btn>
 
-      <v-btn small flat color='secondary' title='Repost'>
+      <v-btn small flat color='accent' title='Repost'>
         <v-icon left :small='view === "Reply"'>arrow_forward</v-icon>
         {{ post.stats.reposts }}
       </v-btn>
 
-      <v-btn small flat :color='post.hasLiked ? "primary" : "secondary"' title='Like' @click.stop.native='likePost()'>
+      <v-btn small flat :color='post.hasLiked ? "primary" : "accent"' title='Like' @click.stop.native='likePost()'>
         <v-icon left :small='view === "Reply"'>thumb_up</v-icon>
         {{ post.stats.likes }}
       </v-btn>
 
     </v-card-actions>
 
-    <v-divider></v-divider>
+    <v-divider class='grey darken-4'></v-divider>
 
   </v-card>
 </template>

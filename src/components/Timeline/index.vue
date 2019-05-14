@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <v-btn round class='white--text primary' flat>
+      <v-btn round flat class='primary'>
         Make a post
         <v-icon right>publish</v-icon>
       </v-btn>
