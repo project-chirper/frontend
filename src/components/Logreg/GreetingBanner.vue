@@ -7,14 +7,14 @@
       {{ header }}
     </h1>
 
-    <p class='mt-3 font-weight-regular secondary--text' :class='{
+    <p class='mt-3 font-weight-regular' :class='{
       "subheading": $vuetify.breakpoint.mdAndDown,
       "headline": $vuetify.breakpoint.lgAndUp
     }'>
       {{ paragraph }}
     </p>
 
-    <p class='caption secondary--text'>Bitter is a project built for educational purposes by Matthew Lang aka MattL019.</p>
+    <p class='caption accent--text'>Bitter is a project built for educational purposes by Matthew Lang aka MattL019.</p>
   </div>
 </template>
 
