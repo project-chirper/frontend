@@ -31,7 +31,7 @@ export default {
     paragraph: function() {
       return this.type === 'login' ?
         'Came for a moan, have you?' :
-        'Bitter is a social network platform solely created for people to moan.'
+        'Bitter is a social network platform created solely for people to moan.'
     }
   }
 }
