@@ -76,5 +76,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.toolbar { background-color: rgba(#212121, .9); border-bottom:2px solid #1F5B9B; }
+.toolbar { background-color: rgba(#212121, .9); /*border-bottom:2px solid #FF2667;*/ }
 </style>

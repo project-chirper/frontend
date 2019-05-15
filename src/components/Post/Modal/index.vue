@@ -64,6 +64,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.border-top { border-top: 2px solid #3295FF !important; }
-.border-bottom { border-bottom: 2px solid #3295FF !important; }
+.border-top { border-top: 2px solid #FF2667 !important; }
+.border-bottom { border-bottom: 2px solid #FF2667 !important; }
 </style>

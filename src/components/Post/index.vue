@@ -9,11 +9,10 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn round color='primary' class='ma-0'
+      <v-btn round class='ma-0 tertiary--text' flat :outline='!post.author.isFollowing'
         v-if='view === "Focused" && post.author.id !== $store.state.user.data.id' 
-        :outline='!post.author.isFollowing'
         @click='() => { toggleFollow(post.author.id); post.author.isFollowing = !post.author.isFollowing }'>
-        Follow
+        {{ post.author.isFollowing ? 'Unfollow' : 'Follow' }}
       </v-btn>
 
     </v-card-title>
@@ -42,7 +41,7 @@
         {{ post.stats.reposts }}
       </v-btn>
 
-      <v-btn small flat :color='post.hasLiked ? "primary" : "accent"' title='Dislike' @click.stop.native='likePost()'>
+      <v-btn small flat :color='post.hasLiked ? "tertiary" : "accent"' title='Dislike' @click.stop.native='likePost()'>
         <v-icon left :small='view === "Reply"'>thumb_down</v-icon>
         {{ post.stats.likes }}
       </v-btn>

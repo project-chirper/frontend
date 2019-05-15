@@ -5,7 +5,7 @@
         Make a post
         <v-icon right>publish</v-icon>
       </v-btn>
-      <v-btn outline round color='primary' @click='fetchUpdates()'>
+      <v-btn outline round color='tertiary' @click='fetchUpdates()'>
         Fetch New Posts
         <v-icon right>refresh</v-icon>
       </v-btn>
