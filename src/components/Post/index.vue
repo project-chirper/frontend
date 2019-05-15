@@ -1,6 +1,5 @@
 <template>
   <v-card>
-
     <v-card-title :class='{ "py-2": view === "Timeline" || "Reply", "py-3": view === "Focused" }'>
       <span :class='{
         "subheading": view === "Timeline",
@@ -10,7 +9,10 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn v-if='view === "Focused" && post.author.id !== $store.state.user.data.id' :outline='!post.author.isFollowing' round color='primary' class='ma-0'>
+      <v-btn round color='primary' class='ma-0'
+        v-if='view === "Focused" && post.author.id !== $store.state.user.data.id' 
+        :outline='!post.author.isFollowing'
+        @click='() => { toggleFollow(post.author.id); post.author.isFollowing = !post.author.isFollowing }'>
         Follow
       </v-btn>
 
@@ -40,8 +42,8 @@
         {{ post.stats.reposts }}
       </v-btn>
 
-      <v-btn small flat :color='post.hasLiked ? "primary" : "accent"' title='Like' @click.stop.native='likePost()'>
-        <v-icon left :small='view === "Reply"'>thumb_up</v-icon>
+      <v-btn small flat :color='post.hasLiked ? "primary" : "accent"' title='Dislike' @click.stop.native='likePost()'>
+        <v-icon left :small='view === "Reply"'>thumb_down</v-icon>
         {{ post.stats.likes }}
       </v-btn>
 
@@ -55,7 +57,7 @@
 <script>
 
 import { mapActions } from 'vuex'
-import { TOGGLE_POST_LIKE } from '@/store/actions.type'
+import { TOGGLE_POST_LIKE, TOGGLE_USER_FOLLOW } from '@/store/actions.type'
 
 export default {
   name: 'Post',
@@ -70,7 +72,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      toggleLike: TOGGLE_POST_LIKE
+      toggleLike: TOGGLE_POST_LIKE,
+      toggleFollow: TOGGLE_USER_FOLLOW
     }),
     // Likes a post
     async likePost() {

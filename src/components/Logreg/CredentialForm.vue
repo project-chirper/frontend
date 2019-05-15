@@ -55,7 +55,7 @@
         </v-text-field>
 
         <v-alert :value='errors.length' class='my-3' type='error'>
-          <v-chip v-for='error in errors' :key='error'>{{ error }}</v-chip>
+          <v-chip v-for='error in errors' :key='error' class='error'>{{ error }}</v-chip>
         </v-alert>
 
         <v-layout row wrap class='px-4'>

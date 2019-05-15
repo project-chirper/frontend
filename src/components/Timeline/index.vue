@@ -13,7 +13,7 @@
       <v-divider class='mt-2 mb-4'></v-divider>
     </div>
 
-    <v-dialog full-width width='700' v-model='dialog' class='mb-5'>
+    <v-dialog full-width width='700' v-model='dialog' class='mb-5' content-class='timeline-modal'>
       <div slot='activator'>
         <Post 
           v-for='(post, index) in timeline' 
@@ -37,7 +37,7 @@
 <script>
 import PostService from '@/services/post.service'
 import { mapGetters, mapActions } from 'vuex'
-import { FETCH_TIMELINE, FETCH_UPDATES } from '@/store/actions.type'
+import { FETCH_TIMELINE, FETCH_TIMELINE_UPDATES } from '@/store/actions.type'
 
 import Post from '@/components/Post'
 import Modal from '@/components/Post/Modal'
@@ -53,25 +53,25 @@ export default {
       focusedPost: {}, // currently focusedPost in modal
       dialog: false, // controls modal toggle,
       loading: false, // controls loading circle
-      loadMore: true // Whether you can load more or not
+      canLoadMore: true // Whether you can load more or not
     }
   },
   methods: {
     ...mapActions({
       fetchTimeline: FETCH_TIMELINE,
-      fetchUpdates: FETCH_UPDATES
+      fetchUpdates: FETCH_TIMELINE_UPDATES
     }),
     changeFocus(post) { // changes the current modal post
       this.focusedPost = post
       this.dialog = true // manually opens modal
     },
-    async checkUpdates() {
+    async loadMore() {
       if (this.loading) return false
-      else if (this.timeline.length < 25) return this.loadMore = false
-      else if (this.loadMore && getScrollPercent() >= 90) {
+      else if (this.timeline.length < 25) return this.canLoadMore = false
+      else if (this.canLoadMore && getScrollPercent() >= 90) {
         this.loading = true
         let postLength = await this.fetchTimeline()
-        if (postLength < 25) this.loadMore = false
+        if (postLength < 25) this.canLoadMore = false
         this.loading = false
       }
     }
@@ -92,10 +92,10 @@ export default {
     if (this.timeline.length) this.fetchUpdates()
 
     // Add event listener for scrolling to check updates
-    document.addEventListener('scroll', this.checkUpdates)
+    document.addEventListener('scroll', this.loadMore)
   },
   beforeDestroy() {
-    document.removeEventListener('scroll', this.checkUpdates) // remove event listener on destroy
+    document.removeEventListener('scroll', this.loadMore) // remove event listener on destroy
   }
 }
 </script>

@@ -14,7 +14,7 @@ export default {
    * @param lastPostId the first post in the previously fetched timeline
    * @return { ok, data }
    */
-  async fetchUpdates(lastPostId) {
+  async fetchTimelineUpdates(lastPostId) {
     let { data, status } = await ApiService.query('post/timeline/new', { lastPostId })
     return { ok: status === 200, data }
   },
@@ -31,10 +31,19 @@ export default {
    * @desc Fetches replies of a post
    * @param postId Post to fetch replies of
    */
-  async fetchReplies(postId) {
-    let { status, data } = await ApiService.get(`post/${postId}/replies`)
+  async fetchReplies(postId, offset = 0, firstReplyId) {
+    let { status, data } = await ApiService.query(`post/${postId}/replies`, { offset, firstReplyId })
     return { ok: status === 200, data }
-	},
+  },
+  /**
+   * @desc Fetches updated replies of a post
+   * @param postId Post to fetch replies of
+   * @param lastReplyId the last fetched reply id
+   */
+  async fetchReplyUpdates(postId, lastReplyId) {
+    let { status, data } = await ApiService.query(`post/${postId}/replies/new`, { lastReplyId })
+    return { ok: status === 200, data }
+  },
 	/**
 	 * @desc Fetches a Post
 	 * @param postId Post ID to fetch

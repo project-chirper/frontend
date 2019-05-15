@@ -11,51 +11,43 @@
 
     <Post v-if='Object.keys(post).length' :post='post' view='Focused' :class='{ 
       "border-top": previousPosts.length,
-      "border-bottom": replies.length
+      "border-bottom": post.stats.replies > 0
     }'/>
 
     <!-- Replies -->
-    <div class='mt-0' v-if='replies.length' style='cursor:pointer' title='Click to view replies'>
-      <Post v-for='reply in replies' :key='reply.id' :post='reply' view='Reply' @click.native='changeFocus(reply)'/>
-    </div>
+    <Replies :postId='post.id' @click='(reply) => changeFocus(reply)'/>
+
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import { FETCH_REPLIES } from '@/store/actions.type'
 
 import Post from '../index'
+import Replies from './Replies'
 
 export default {
   props: {
     focusedPost: Object
   },
-  components: { Post },
+  components: { Post, Replies },
   data() {
     return {
       previousPosts: [],
       post: {},
-      replies: [],
-      loading: false
+      loading: false,
     }
   },
   methods: {
-    ...mapActions({
-      fetchReplies: FETCH_REPLIES
-    }),
     // Change a reply to the focused post
     async changeFocus(post, index = -1, fromTimeline = false) {
       // IF we are already loading, return false
       if (this.loading) return false
-
       this.loading = true // start loading
       if (Object.keys(this.post).length) {
         if (index < 0 && !fromTimeline) this.previousPosts.push(this.post)
         else this.previousPosts.splice(index, this.previousPosts.length-index)
       }
       this.post = post // Update focused post
-      this.replies = await this.fetchReplies(post.id) // Fetch replies for new post
       history.pushState({}, null, `/user/${post.author.username}/post/${post.id}`)
       this.loading = false // end loading
     }

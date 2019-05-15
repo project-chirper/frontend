@@ -10,3 +10,6 @@ export const SET_ERROR = "setError";
 // Timeline
 export const TIMELINE_APPEND = "timelineAppend"
 export const TIMELINE_PREPEND = "timelinePrepend"
+// Replies
+export const REPLIES_APPEND = "repliesAppend"
+export const REPLIES_PREPEND = "repliesPrepend"

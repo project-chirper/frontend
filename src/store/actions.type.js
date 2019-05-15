@@ -10,9 +10,10 @@ export const CHECK_AUTH = "checkAuth";
 
 // Timeline & Posts
 export const FETCH_TIMELINE = "fetchTimeline"
-export const FETCH_UPDATES = "fetchUpdates"
+export const FETCH_TIMELINE_UPDATES = "fetchTimelineUpdates"
 export const TOGGLE_POST_LIKE = "togglePostLike"
 export const FETCH_REPLIES = "fetchReplies"
+export const FETCH_REPLY_UPDATES = "fetchReplyUpdates"
 export const FETCH_POST = "fetchPost"
 
 // Users
