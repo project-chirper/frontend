@@ -6,7 +6,7 @@
       <v-btn flat
         v-for='(nav, key) in navListAvailable'
         :key='key'
-        router :to='nav.route'
+        router :to='typeof nav.route === "function" ? nav.route() : nav.route'
         :title='nav.desc'
         class='font-weight-bold'
         @click='navClick(nav)'>
@@ -19,7 +19,13 @@
       <v-toolbar-side-icon slot='activator'></v-toolbar-side-icon>
 
       <v-list>
-        <v-list-tile v-for='(nav, key) in navListAvailable' :key='key' router :to ='nav.route' :title='nav.desc' @click='navClick(nav)'>
+        <v-list-tile 
+          v-for='(nav, key) in navListAvailable' 
+          :key='key' 
+          router :to='typeof nav.route === "function" ? nav.route() : nav.route' 
+          :title='nav.desc' 
+          @click='navClick(nav)'
+        >
           <v-list-tile-content>
             <v-list-tile-title>{{ typeof nav.name === 'function' ? nav.name() : nav.name }}</v-list-tile-title>
           </v-list-tile-content>
@@ -38,7 +44,7 @@ export default {
     return {
       navListRaw: [
         { name: 'Home', icon: 'home', route: '/', desc: 'View your timeline' },
-        { name: () => this.$store.state.user.data.username, icon: 'person', route: '/profile', requiresAuth: true },
+        { name: () => this.$store.state.user.data.username, icon: 'person', route: () => `/user/${this.$store.state.user.data.username}`, requiresAuth: true },
         { name: 'Logout', icon: 'exit_to_app', click: 'logout', desc: 'Logout', requiresAuth: true },
 
         { name: 'Login', route: '/login', desc: 'Login to your account', requiresNoAuth: true },
@@ -49,7 +55,7 @@ export default {
   computed: {
     navListAvailable: function() {
       return this.navListRaw.filter(x => this.guard(x))
-    }
+    },
   },
   methods: {
     // Resolver

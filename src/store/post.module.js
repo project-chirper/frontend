@@ -41,10 +41,11 @@ const actions = {
    * @desc Fetches the timeline, with the current page.
    * @returns Number of posts fetched, or false if error
    */
-  async [FETCH_TIMELINE](context) {
+  async [FETCH_TIMELINE](context, author = false) {
     let { ok, data } = await PostService.fetchTimeline(
       context.state.timeline.page, // current page
-      context.state.timeline.firstPostId // first post id fetched
+      context.state.timeline.firstPostId, // first post id fetched,
+      author
     )
 		if (ok) {
       context.commit(TIMELINE_APPEND, data.posts) // append to state
@@ -55,10 +56,10 @@ const actions = {
    * @desc Fetches timeline updates
    * @returns Number of posts fetched, or false if error
    */
-  async [FETCH_TIMELINE_UPDATES](context) {
+  async [FETCH_TIMELINE_UPDATES](context, author = false) {
     if (!context.state.timeline[0]) return await context.dispatch(FETCH_TIMELINE) // If there are zero posts, simply try to fetch a new timeline
 
-    let { ok, data } = await PostService.fetchTimelineUpdates(context.state.timeline[0].id)
+    let { ok, data } = await PostService.fetchTimelineUpdates(context.state.timeline[0].id, author)
     if (ok) {
       context.commit(TIMELINE_PREPEND, data.posts)
       return data.posts.length

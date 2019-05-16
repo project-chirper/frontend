@@ -48,6 +48,12 @@ export default {
   components: {
     Post, Modal
   },
+  props: {
+    author: {
+      type: String | Boolean, // If specified, will load posts only from that author.
+      default: false
+    }
+  },
   data() {
     return {
       focusedPost: {}, // currently focusedPost in modal
@@ -70,7 +76,7 @@ export default {
       else if (this.timeline.length < 25) return this.canLoadMore = false
       else if (this.canLoadMore && getScrollPercent() >= 90) {
         this.loading = true
-        let postLength = await this.fetchTimeline()
+        let postLength = await this.fetchTimeline(this.author)
         if (postLength < 25) this.canLoadMore = false
         this.loading = false
       }
@@ -88,8 +94,8 @@ export default {
     }
   },
   beforeMount() { // load timeline and fetch updates if timeline already loaded
-    if (!this.timeline.length) this.fetchTimeline()
-    if (this.timeline.length) this.fetchUpdates()
+    if (!this.timeline.length) this.fetchTimeline(this.author)
+    if (this.timeline.length) this.fetchUpdates(this.author)
 
     // Add event listener for scrolling to check updates
     document.addEventListener('scroll', this.loadMore)

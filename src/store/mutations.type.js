@@ -13,3 +13,6 @@ export const TIMELINE_PREPEND = "timelinePrepend"
 // Replies
 export const REPLIES_APPEND = "repliesAppend"
 export const REPLIES_PREPEND = "repliesPrepend"
+
+// User
+export const ADD_USER = "addUser"

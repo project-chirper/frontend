@@ -18,3 +18,4 @@ export const FETCH_POST = "fetchPost"
 
 // Users
 export const TOGGLE_USER_FOLLOW = "toggleUserFollow"
+export const FETCH_USER = "fetchUser"

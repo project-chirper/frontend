@@ -3,22 +3,27 @@ import AuthService from '../services/auth.service'
 import UserService from '../services/user.service'
 import JwtService from '../services/jwt.service'
 
+import Cache from '@mattl019/objectset'
+
 import {
   LOGIN, LOGOUT, REGISTER, CHECK_AUTH, 
-  TOGGLE_USER_FOLLOW
+  TOGGLE_USER_FOLLOW, FETCH_USER
 } from './actions.type'
 
 import {
-  SET_AUTH, PURGE_AUTH
+  SET_AUTH, PURGE_AUTH, ADD_USER
 } from './mutations.type'
 
 const state = {
   data: {}, // Object to store user data
-  isAuthed: !!JwtService.getToken() // Whether the user is authenticated or not
+  isAuthed: !!JwtService.getToken(), // Whether the user is authenticated or not,
+
+  users: new Cache('username'), // { id, username, etc... }
+  timelines: new Cache('id')
 }
 
 const getters = {
-
+  user: state => username => state.users.get(username)
 }
 
 const actions = {
@@ -66,6 +71,28 @@ const actions = {
   async [TOGGLE_USER_FOLLOW](context, userId) {
     let response = await UserService.followUser(userId)
     return response
+  },
+
+  /**
+   * @desc Fetches a user
+   * @param username The username of the user to fetch
+   * @return Commits user data into cache and returns it, or false if error
+   */
+  async [FETCH_USER](context, username) {
+    // If username is the user
+    if (context.state.data.username === username) return context.state.data
+
+    // Check chache for user first
+    let user = context.state.users.fetch(username)
+    if (user) return user
+
+    let { ok, data } = await UserService.fetchUser(username)
+
+    if (ok) {
+      context.commit(ADD_USER, data)
+      return data
+    }
+    else return false
   }
 }
 
@@ -80,6 +107,9 @@ const mutations = {
     state.user = {}
     JwtService.destroyToken()
     ApiService.setHeader() // update auth header with empty token
+  },
+  [ADD_USER](state, user) {
+    state.users.add(user)
   }
 }
 

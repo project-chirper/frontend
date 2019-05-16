@@ -27,6 +27,22 @@ export const router = new Router({
       component: () => import('./views/Logreg'),
       props: { action: 'register' },
       meta: { title: 'Bitter Login', requiresNoAuth: true }
+    },
+
+
+    // Profile
+    {
+      path: '/user/:username',
+      name: 'profile',
+      props: true,
+      component: () => import('./views/Profile'),
+      meta: { title: 'Bitter Profile' },
+      children: [
+        {
+        path: '/post/:id',
+        props: true
+        }
+      ]
     }
   ]
 })

@@ -58,7 +58,7 @@ export default {
     document.querySelector('.timeline-modal').addEventListener('scroll', this.loadMore)
   },
   beforeDestroy() {
-    document.querySelector('.timeline-modal').removeEventListener('scroll', this.loadMore)
+    //document.querySelector('.timeline-modal').removeEventListener('scroll', this.loadMore)
   }
 }
 </script>

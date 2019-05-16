@@ -5,8 +5,9 @@ export default {
    * @desc Fetches a fresh timeline
    * @return { ok, data }
    */
-  async fetchTimeline(offset = 0, firstPostId) {
-    let { data, status } = await ApiService.query('post/timeline', { offset, firstPostId })
+  async fetchTimeline(offset = 0, firstPostId, author) {
+    let query = author ? `post/author/${author}` : `post/timeline`
+    let { data, status } = await ApiService.query(query, { offset, firstPostId })
     return { ok: status === 200, data }
   },
   /**
@@ -14,7 +15,9 @@ export default {
    * @param lastPostId the first post in the previously fetched timeline
    * @return { ok, data }
    */
-  async fetchTimelineUpdates(lastPostId) {
+  async fetchTimelineUpdates(lastPostId, author) {
+    if (author) return { ok: false } // not yet available for author
+    
     let { data, status } = await ApiService.query('post/timeline/new', { lastPostId })
     return { ok: status === 200, data }
   },
