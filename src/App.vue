@@ -24,4 +24,8 @@ export default {
 .v-btn {
   min-width: 0;
 }
+a {
+  text-decoration:none;
+  cursor:pointer;
+}
 </style>

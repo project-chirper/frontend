@@ -27,7 +27,11 @@ import Replies from './Replies'
 
 export default {
   props: {
-    focusedPost: Object
+    focusedPost: Object,
+    urlPost: { // The ID of a post that has been linked to in the URL
+      type: String | Boolean,
+      default: false 
+    }
   },
   components: { Post, Replies },
   data() {

@@ -9,6 +9,8 @@ export const SET_ERROR = "setError";
 
 // Timeline
 export const TIMELINE_SET = "timelineSet"
+export const POST_CACHE_ADD = "postCacheAdd"
+
 // Replies
 export const REPLIES_SET = "repliesSet"
 

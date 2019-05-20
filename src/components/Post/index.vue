@@ -9,11 +9,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn round class='ma-0 tertiary--text' flat :outline='!post.author.isFollowing'
-        v-if='view === "Focused" && post.author.id !== $store.state.user.data.id' 
-        @click='() => { toggleFollow(post.author.id); post.author.isFollowing = !post.author.isFollowing }'>
-        {{ post.author.isFollowing ? 'Unfollow' : 'Follow' }}
-      </v-btn>
+      <follow-btn v-if='view === "Focused"' :isFollowing='this.post.author.isFollowing' :userId='this.post.author.id'/>
 
     </v-card-title>
 
@@ -54,9 +50,10 @@
 </template>
 
 <script>
-
 import { mapActions } from 'vuex'
-import { TOGGLE_POST_LIKE, TOGGLE_USER_FOLLOW } from '@/store/actions.type'
+import { TOGGLE_POST_LIKE } from '@/store/actions.type'
+
+import FollowBtn from '@/components/Profile/FollowBtn'
 
 export default {
   name: 'Post',
@@ -69,10 +66,10 @@ export default {
     view: 'Timeline' | 'Focused' | 'Reply', // How to display the post
     index: Number
   },
+  components: { FollowBtn },
   methods: {
     ...mapActions({
-      toggleLike: TOGGLE_POST_LIKE,
-      toggleFollow: TOGGLE_USER_FOLLOW
+      toggleLike: TOGGLE_POST_LIKE
     }),
     // Likes a post
     async likePost() {

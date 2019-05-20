@@ -39,8 +39,8 @@ export const router = new Router({
       meta: { title: 'Bitter Profile' },
       children: [
         {
-        path: '/post/:id',
-        props: true
+          path: 'post/:postId',
+          props: true
         }
       ]
     }

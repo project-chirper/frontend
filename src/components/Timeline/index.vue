@@ -38,7 +38,12 @@
 import PostService from '@/services/post.service'
 
 import { mapActions } from 'vuex'
-import { FETCH_TIMELINE, FETCH_TIMELINE_UPDATES } from '@/store/actions.type'
+
+import { 
+  FETCH_TIMELINE, 
+  FETCH_TIMELINE_UPDATES, 
+  FETCH_POST 
+} from '@/store/actions.type'
 
 import Post from '@/components/Post'
 import Modal from '@/components/Post/Modal'
@@ -53,6 +58,10 @@ export default {
     from: { // Where to display posts from. If 'public', then it will show users public timeline. If user ID, it will show that users posts.
       type: String,
       default: 'public'
+    },
+    linkedToPost: { // If user timeline, this will be the ID of the linked to focused post
+      type: String | Boolean,
+      default: false
     }
   },
   data() {
@@ -68,7 +77,8 @@ export default {
   methods: {
     ...mapActions({
       fetchTimeline: FETCH_TIMELINE,
-      fetchUpdates: FETCH_TIMELINE_UPDATES
+      fetchUpdates: FETCH_TIMELINE_UPDATES,
+      fetchPost: FETCH_POST
     }),
     changeFocus(post) { // changes the current modal post
       this.focusedPost = post
@@ -97,6 +107,16 @@ export default {
       else if (getScrollPercent() >= 90) { // If we have more posts to load and user has scrolled the appropriate amount
         await this.loadPosts({ loadMore: true })
       }
+    },
+    /**
+     * @desc Sets the linked to post to the focused post
+     */
+    async setLinkedToPost() {
+      console.log("hi")
+      // Find if linked to post is already loaded
+      let matchedPost = this.posts.filter(post => post.id === this.linkedToPost)[0]
+      this.focusedPost = matchedPost ? matchedPost : await this.fetchPost(this.linkedToPost)
+      this.dialog = true // Manually open focused post
     }
   },
   watch: {
@@ -117,13 +137,15 @@ export default {
      */
     from: async function(newVal, oldVal) {
       this.posts = await this.fetchTimeline({ author: this.from }) // Fetch new posts
-    }
+    },
   },
   /**
    * @desc Load timeline for the first time
    */
-  async beforeMount() { // load timeline and fetch updates if timeline already loaded
-    await this.loadPosts({ updates: this.posts.length })
+  async beforeMount() {
+    await this.loadPosts({ updates: this.posts.length }) // load timeline and fetch updates if timeline already loaded
+    if (this.linkedToPost) await this.setLinkedToPost()
+
     // Add event listener for scrolling to check updates
     document.addEventListener('scroll', this.loadMore)
   },

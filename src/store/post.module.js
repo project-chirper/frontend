@@ -12,12 +12,13 @@ import {
 } from './actions.type'
 
 import {
-  REPLIES_SET, TIMELINE_SET
+  REPLIES_SET, TIMELINE_SET, POST_CACHE_ADD
 } from './mutations.type'
 
 const state = {
   timelines: new Cache("from"), // { from: 'public' | 'username', posts: [],  page: 0, firstPostId: undefined }
-  replies: new Cache("postId") // { postId (ukey), posts, firstReplyId, page }
+  replies: new Cache("postId"), // { postId (ukey), posts, firstReplyId, page }
+  posts: new Cache("id") // { id (ukey), body, author, ... } regular post cache
 }
 
 const getters = {
@@ -128,12 +129,16 @@ const actions = {
   },
   
 	async [FETCH_POST](context, postId) {
-		let { ok, data } = await PostService.fetchPost(postId)
-		if (ok) return data
+    let post = context.state.posts.fetch(postId)
+    if (post) return post // If post is in posts cache, simply return it
+
+    let { ok, data } = await PostService.fetchPost(postId)
+		if (ok) {
+      context.commit(POST_CACHE_ADD, post)
+      return data
+    }
 		else return false
   },
-  
-
 }
 
 const mutations = {
@@ -170,6 +175,9 @@ const mutations = {
         firstReplyId: posts[0] ? posts[0].id : undefined
       })
     }
+  },
+  [POST_CACHE_ADD](state, post) {
+    state.posts.add(post)
   }
 }
 
