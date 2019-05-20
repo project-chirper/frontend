@@ -54,7 +54,7 @@ export default {
   },
   watch: {
     focusedPost: async function(newVal, oldVal) { // update focused post when changed
-      this.previousPosts = []
+      this.previousPosts = [] // Since it is FROM the timeline, we clear previous posts
       if(Object.keys(this.focusedPost).length) {
         await this.changeFocus(newVal, -1, true)
       }

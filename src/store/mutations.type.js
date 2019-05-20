@@ -8,11 +8,9 @@ export const PURGE_AUTH = "logOut";
 export const SET_ERROR = "setError";
 
 // Timeline
-export const TIMELINE_APPEND = "timelineAppend"
-export const TIMELINE_PREPEND = "timelinePrepend"
+export const TIMELINE_SET = "timelineSet"
 // Replies
-export const REPLIES_APPEND = "repliesAppend"
-export const REPLIES_PREPEND = "repliesPrepend"
+export const REPLIES_SET = "repliesSet"
 
 // User
 export const ADD_USER = "addUser"
