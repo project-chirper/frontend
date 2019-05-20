@@ -6,7 +6,9 @@ export default {
    * @return { ok, data }
    */
   async fetchTimeline(offset = 0, firstPostId, author) {
-    let query = author ? `post/author/${author}` : `post/timeline`
+    console.log("Fetched timeline.")
+
+    let query = author !== 'public' ? `post/author/${author}` : `post/timeline`
     let { data, status } = await ApiService.query(query, { offset, firstPostId })
     return { ok: status === 200, data }
   },
@@ -16,8 +18,10 @@ export default {
    * @return { ok, data }
    */
   async fetchTimelineUpdates(lastPostId, author) {
+    console.log("Fetched timeline updates.")
+
     if (author) return { ok: false } // not yet available for author
-    
+    s
     let { data, status } = await ApiService.query('post/timeline/new', { lastPostId })
     return { ok: status === 200, data }
   },
@@ -35,6 +39,8 @@ export default {
    * @param postId Post to fetch replies of
    */
   async fetchReplies(postId, offset = 0, firstReplyId) {
+    console.log("Fetched replies.")
+
     let { status, data } = await ApiService.query(`post/${postId}/replies`, { offset, firstReplyId })
     return { ok: status === 200, data }
   },
@@ -44,6 +50,8 @@ export default {
    * @param lastReplyId the last fetched reply id
    */
   async fetchReplyUpdates(postId, lastReplyId) {
+    console.log("Fetched reply updates.")
+
     let { status, data } = await ApiService.query(`post/${postId}/replies/new`, { lastReplyId })
     return { ok: status === 200, data }
   },

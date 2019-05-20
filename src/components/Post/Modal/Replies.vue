@@ -1,6 +1,6 @@
 <template>
-  <div class='mt-0' v-if='replies(postId)' style='cursor:pointer' title='Click to view replies'>
-    <Post v-for='reply in replies(postId)' :key='reply.id' :post='reply' view='Reply' @click.native='$emit("click", reply)'/>
+  <div class='mt-0' v-if='replies.length' style='cursor:pointer' title='Click to view replies'>
+    <Post v-for='reply in replies' :key='reply.id' :post='reply' view='Reply' @click.native='$emit("click", reply)'/>
 
     <div class='text-xs-center'>
       <v-progress-circular v-if='loading' indeterminate class='primary--text my-5'></v-progress-circular>
@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { FETCH_REPLIES } from '@/store/actions.type'
 
 import getScrollPercent from '@/common/getScrollPercent'
@@ -25,11 +25,9 @@ export default {
   data() {
     return {
       loading: false,
-      canLoadMore: true
+      canLoadMore: true,
+      replies: []
     }
-  },
-  computed: {
-    ...mapGetters(['replies'])
   },
   methods: {
     ...mapActions({
@@ -37,21 +35,27 @@ export default {
     }),
     async loadMore() {
       if (this.loading || !this.canLoadMore) return false // Currently loading replies, or can't load more, so return false
-      else if (this.replies(this.postId).length < 10) return this.canLoadMore = false // No more replies to be loaded
-      else if (this.canLoadMore && getScrollPercent(document.querySelector('.timeline-modal')) >= 90) {
-        this.loading = true
-        let repliesLength = await this.fetchReplies({ postId: this.postId, loadMore: true })
-        if (repliesLength < 10) this.canLoadMore = false
-        this.loading = false
+      else if (this.replies.length < 10) return this.canLoadMore = false // No more replies to be loaded
+      else if (getScrollPercent(document.querySelector('.timeline-modal')) >= 90) {
+        await this.loadReplies({ loadMore: true })
       }
+    },
+    /**
+     * @desc Loads replies
+     * @param loadMore whether to load more or not
+     */
+    async loadReplies({ loadMore = false }) {
+      if (loadMore && !this.canLoadMore) return false
+      this.loading = false
+      let repliesLength = this.replies.length
+      this.replies = await this.fetchReplies({ postId: this.postId, loadMore })
+      this.loading = false
+      if (this.replies.length-repliesLength < 10) this.canLoadMore = false
     }
   },
   watch: {
     postId: async function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        await this.fetchReplies({ postId: this.postId })
-        this.$forceUpdate()
-      }
+      await this.loadReplies({ loadMore: false })
     }
   },
   mounted() {

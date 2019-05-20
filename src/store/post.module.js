@@ -12,57 +12,63 @@ import {
 } from './actions.type'
 
 import {
-  TIMELINE_APPEND, TIMELINE_PREPEND, REPLIES_APPEND, REPLIES_PREPEND
+  REPLIES_SET, TIMELINE_SET
 } from './mutations.type'
 
 const state = {
-	timeline: {
-    posts: [],
-    page: 0,
-    firstPostId: undefined
-  },
-  cache: new Cache("id"),
-
+  timelines: new Cache("from"), // { from: 'public' | 'username', posts: [],  page: 0, firstPostId: undefined }
   replies: new Cache("postId") // { postId (ukey), posts, firstReplyId, page }
 }
 
 const getters = {
-  timeline: state => {
-		return state.timeline.posts
-  },
-  replies: state => postId => {
-    let replies = state.replies.fetch(postId) // get replies for postId
-    return replies ? replies.posts : false
-  }
+
 }
 
 const actions = {
   /**
    * @desc Fetches the timeline, with the current page.
-   * @returns Number of posts fetched, or false if error
+   * @returns Whole timeline, or false
    */
-  async [FETCH_TIMELINE](context, author = false) {
+  async [FETCH_TIMELINE](context, { loadMore = false, author = 'public' }) {
+    // Check cache for timeline
+    let timeline = context.state.timelines.fetch(author)
+    if (timeline && !loadMore) return timeline.posts
+
     let { ok, data } = await PostService.fetchTimeline(
-      context.state.timeline.page, // current page
-      context.state.timeline.firstPostId, // first post id fetched,
+      timeline.page, // current page
+      timeline.firstPostId, // first post id fetched,
       author
     )
+
 		if (ok) {
-      context.commit(TIMELINE_APPEND, data.posts) // append to state
-      return data.posts.length
+      if (author !== 'public') data.posts = data.posts.map(post => {
+        post.author = data.author
+        return post
+      })
+
+      let posts = timeline ? timeline.posts.concat(data.posts) : data.posts
+      context.commit(TIMELINE_SET, { posts, author }) // append to cache
+      return posts
     } else return false
   },
   /**
    * @desc Fetches timeline updates
-   * @returns Number of posts fetched, or false if error
+   * @returns Whole timeline with updates
    */
-  async [FETCH_TIMELINE_UPDATES](context, author = false) {
-    if (!context.state.timeline[0]) return await context.dispatch(FETCH_TIMELINE) // If there are zero posts, simply try to fetch a new timeline
+  async [FETCH_TIMELINE_UPDATES](context, author = 'public') {
+    let timeline = context.state.timelines.fetch(author)
+    if (!timeline || (timeline && timeline.posts.length === 0)) return await context.dispatch(FETCH_TIMELINE, { author }) // If there are zero posts, simply try to fetch a new timeline
 
-    let { ok, data } = await PostService.fetchTimelineUpdates(context.state.timeline[0].id, author)
+    let { ok, data } = await PostService.fetchTimelineUpdates(timeline.posts[0].id, author)
     if (ok) {
-      context.commit(TIMELINE_PREPEND, data.posts)
-      return data.posts.length
+      if (author !== 'public') data.posts = data.posts.map(post => {
+        post.author = data.author
+        return post
+      })
+
+      let posts = data.posts.concat(timeline.posts)
+      context.commit(TIMELINE_SET, { posts, author }) // add to cache
+      return posts
     } else return false
   },
   /**
@@ -83,15 +89,19 @@ const actions = {
    */
   async [FETCH_REPLIES](context, { postId, loadMore = false }) {
     let replies = context.state.replies.fetch(postId) // Check cache for reply block
+
     if (replies && !loadMore) return replies.posts // Reply block found, but no load more, so just return replies
+
     let { ok, data } = await PostService.fetchReplies(postId, replies.page, replies.firstReplyId)
+
     if (ok) {
-      let posts = data.replies.map(reply => {
+      data.replies = data.replies.map(reply => {
         reply.body.replyingTo = data.replyingTo
         return reply
       })
-      context.commit(REPLIES_APPEND, { postId, posts })
-      return data.replies.length
+      let posts = replies ? replies.posts.concat(data.replies) : data.replies
+      context.commit(REPLIES_SET, { postId, posts })
+      return posts
     } else return false
   },
 
@@ -102,16 +112,18 @@ const actions = {
    */
   async [FETCH_REPLY_UPDATES](context, postId) {
     let replies = context.state.replies.fetch(postId) // fetch reply block
-    if (!replies || !replies.posts[0]) return await context.dispatch(FETCH_REPLIES) // There are no replyblock or zero replies, try to fetch them
+    if (!replies || !replies.posts[0]) return await context.dispatch(FETCH_REPLIES, { postId }) // There are no replyblock or zero replies, try to fetch them
 
     let { ok, data } = await PostService.fetchReplyUpdates(postId, replies.posts[0].id)
     if (ok) {
-      let posts = data.replies.map(reply => {
+      data.replies = data.replies.map(reply => {
         reply.body.replyingTo = data.replyingTo
         return reply
       })
-      context.commit(REPLIES_PREPEND, { postId, posts })
-      return data.replies.length
+
+      let posts = data.replies.concat(replies.posts)
+      context.commit(REPLIES_SET, { postId, posts })
+      return posts
     } else return false
   },
   
@@ -125,24 +137,30 @@ const actions = {
 }
 
 const mutations = {
-  [TIMELINE_APPEND](state, posts) {
-		if (!state.timeline.firstPostId) state.timeline.firstPostId = posts[0].id
-		state.timeline.page++ // increase page
-
-    state.timeline.posts = state.timeline.posts.concat(posts) // append to timeline
-    state.cache.addMany(posts) // Add to cache
+  [TIMELINE_SET](state, { posts, author }) {
+    let timeline = state.timelines.fetch(author)
+    if (timeline) {
+      state.timelines.update(author, {
+        ...timeline,
+        posts,
+        page: timeline.page + 1,
+      })
+    } else {
+      state.timelines.add({
+        from: author,
+        page: 1,
+        posts,
+        firstReplyId: posts[0] ? posts[0].id : undefined
+      })
+    }
   },
-  [TIMELINE_PREPEND](state, posts) {
-    state.timeline.posts = posts.concat(state.timeline.posts) // prepend to timeline
-    state.cache.addMany(posts) // Add to cache
-  },
-  [REPLIES_APPEND](state, { postId, posts }) {
+  [REPLIES_SET](state, { postId, posts }) {
     let replies = state.replies.fetch(postId) // current reply block
     if (replies) { // reply block exists
       state.replies.update(postId, {
         ...replies,
+        posts,
         page: replies.page + 1,
-        posts: replies.posts.concat(posts)
       })
     } else { // Reply block doesn't exist
       state.replies.add({
@@ -152,13 +170,6 @@ const mutations = {
         firstReplyId: posts[0] ? posts[0].id : undefined
       })
     }
-  },
-  [REPLIES_PREPEND](state, { postId, posts }) {
-    let replies = state.replies.fetch(postId) // current reply block
-    state.replies.update(postId, {
-      ...replies,
-      posts: posts.concat(replies.posts)
-    })
   }
 }
 
