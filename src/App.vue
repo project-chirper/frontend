@@ -24,8 +24,8 @@ export default {
 .v-btn {
   min-width: 0;
 }
-a {
-  text-decoration:none;
+.link:hover {
+  text-decoration:underline;
   cursor:pointer;
 }
 </style>

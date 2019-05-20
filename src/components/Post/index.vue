@@ -4,7 +4,7 @@
       <span :class='{
         "subheading": view === "Timeline",
         "title": view === "Focused"
-        }' class='font-weight-bold'>{{ post.author.username }}</span>
+        }' class='font-weight-bold link' @click.stop='$router.push({ name: "profile", params: { username: post.author.username }})'>{{ post.author.username }}</span>
       <span class='caption accent--text ml-2'>{{ new Date(post.dateCreated) | moment("from") }}</span>
 
       <v-spacer></v-spacer>

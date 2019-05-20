@@ -4,6 +4,7 @@
       <div>
         <p class='title ma-0'>{{ user.username }}</p>
         <p class="body grey--text text--lighten-2 pt-1 ma-0">{{ user.profile.bio }}</p>
+        <span v-if='user.followsYou' class='caption tertiary--text'>follows you</span>
       </div>
     </v-card-title>
 
@@ -16,10 +17,10 @@
         </v-layout>
     </v-card-text>
 
-    <v-divider></v-divider>
-    <v-card-actions class='px-2'>
+    <v-divider v-if='!self'></v-divider>
+    <v-card-actions class='px-2' v-if='!self'>
       <v-spacer></v-spacer>
-      <follow-btn :userId='user.id' :isFollowing='user.isFollowing'/>
+      <follow-btn :userId='user.id' :isFollowing='user.isFollowed'/>
     </v-card-actions>
 
   </v-card>
@@ -39,7 +40,9 @@ export default {
         { label: `Follower${ this.user.followerCount === 1 ? '' : 's' }`, value: this.user.followerCount },
         { label: 'Following', value: this.user.followingCount }
       ]
-    }
+    },
+    // Whether the current user profile is the authenticated user
+    self: function() { return this.$store.state.user.data.id === this.user.id }
   },
   beforeMount() {
     console.log(this.user)
