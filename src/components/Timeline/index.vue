@@ -29,6 +29,8 @@
 		  <v-progress-circular indeterminate class='primary--text'></v-progress-circular>
     </div>
 
+    <first-post v-if='posts.length === 0'/>
+
   </div>
 </template>
 
@@ -46,12 +48,13 @@ import {
 import Post from '@/components/Post'
 import Modal from '@/components/Post/Modal'
 import Publisher from '@/components/Post/Publisher'
+import FirstPost from '@/components/Profile/FirstPost'
 
 import getScrollPercent from '@/common/getScrollPercent'
 
 export default {
   components: {
-    Post, Modal, Publisher
+    Post, Modal, Publisher, FirstPost
   },
   props: {
     from: { // Where to display posts from. If 'public', then it will show users public timeline. If user ID, it will show that users posts.
@@ -112,8 +115,10 @@ export default {
      * @desc Sets the linked to post
      */
     async setLinkedToPost() {
-      this.focusedPost = await this.fetchPost(this.linkedToPost)
-      this.dialog = true
+      if (this.linkedToPost) {
+        this.focusedPost = await this.fetchPost(this.linkedToPost)
+        this.dialog = true
+      }
     }
   },
   watch: {
@@ -122,10 +127,9 @@ export default {
      */
     dialog: function(newVal, oldVal) {
       if (newVal === false) { // If the modal has been closed
-        history.pushState({}, null, 
+        this.$router.push(
           this.from === 'public' ? '/' : `/user/${this.focusedPost.author.username}` // if viewing public, set to blank. If viewing a users posts, set to the user's profile url
         ) // reset URL when user clicks off post modal
-        this.focusedPost = {} // Reset focused post to blank
       }
     },
     /**
@@ -147,7 +151,7 @@ export default {
    */
   async beforeMount() {
     await this.loadPosts({ updates: this.posts.length }) // load timeline and fetch updates if timeline already loaded
-    if (this.linkedToPost) await this.setLinkedToPost()
+    await this.setLinkedToPost() // check if linkedToPost, if so set it
 
     // Add event listener for scrolling to check updates
     document.addEventListener('scroll', this.loadMore)

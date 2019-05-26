@@ -56,9 +56,14 @@ export default {
       }
 
       this.post = post // Update focused post, search it if need be
-
-      history.pushState({}, null, `/user/${this.post.author.username}/post/${this.post.id}`)
+      if (this.previousPosts.length === 0 && post.body.replyingTo && post.body.replyingTo.body) this.previousPosts.push(post.body.replyingTo) // No previous posts but post has a full replyingTo object so add it
+      
+      this.$router.push(`/user/${post.author.username}/post/${this.post.id}`)
       this.loading = false // end loading
+
+      // Update document title
+      document.title = `${post.author.username}: ${post.body.message}`
+
     }
   },
   watch: {

@@ -16,8 +16,11 @@
     <v-divider></v-divider>
 
     <v-card-text class='pt-2 pt-0' :class='{ "pb-2": view === "Reply" }'>
-      <span v-if='post.type === "PostReply"' class='accent--text' :class='{ "caption": view === "Reply" }'>
+      <span @click.stop='$router.push({ name: "post", params: { username: post.body.replyingTo.author.username, postId: post.body.replyingTo.id } })'
+        v-if='post.type === "PostReply"' 
+        class='accent--text link' :class='{ "caption": view === "Reply" }'>
         replying to {{ post.body.replyingTo.author.username }}
+        <v-icon small color='accent'>remove_red_eye</v-icon>
       </span>
 
       <p class='pt-2 mb-1' :class='{ "title font-weight-regular my-2": view === "Focused" }'>{{ post.body.message }}</p>
@@ -27,10 +30,12 @@
 
     <v-card-actions :class='{ "py-1": view === "Reply" }'>
 
-      <v-btn small flat color='accent' title='View Replies'>
-        <v-icon left :small='view === "Reply"'>list</v-icon>
-        {{ post.stats.replies }}
-      </v-btn>
+      <publisher action='postreply' :replying-to-username='post.author.username' :target-post-id='post.id'>
+        <v-btn small flat color='accent' title='Write a reply'>
+          <v-icon left :small='view === "Reply"'>reply</v-icon>
+          {{ post.stats.replies }}
+        </v-btn>
+      </publisher>
 
       <v-btn small flat color='accent' title='Repost'>
         <v-icon left :small='view === "Reply"'>arrow_forward</v-icon>
@@ -54,6 +59,7 @@ import { mapActions } from 'vuex'
 import { TOGGLE_POST_LIKE } from '@/store/actions.type'
 
 import FollowBtn from '@/components/Profile/FollowBtn'
+import Publisher from './Publisher'
 
 export default {
   name: 'Post',
@@ -66,7 +72,7 @@ export default {
     view: 'Timeline' | 'Focused' | 'Reply', // How to display the post
     index: Number
   },
-  components: { FollowBtn },
+  components: { FollowBtn, Publisher },
   methods: {
     ...mapActions({
       toggleLike: TOGGLE_POST_LIKE

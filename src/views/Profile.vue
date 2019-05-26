@@ -7,7 +7,7 @@
       </v-flex>
 
       <v-flex xs12 md10 lg6 xl4>
-        <timeline :from='user.id' v-if='user.id' :linkedToPost='postId'/>
+        <timeline :from='user.id' v-if='user.id' :linkedToPost='linkedPost'/>
       </v-flex>
 
       <v-flex xs12 md10 lg3>
@@ -29,7 +29,7 @@ import BitterInfo from '@/components/Profile/BitterInfo'
 export default {
   props: {
     username: String,
-    postId: String | Boolean // Linked to focused post
+    linkedPost: String | Boolean // Linked to focused post
   },
   components: { Timeline, UserInfo, BitterInfo },
   data() {
@@ -43,7 +43,10 @@ export default {
     })
   },
   watch: {
-    username: async function (newVal, oldVal) { this.user = await this.fetchUser(newVal) }
+    username: async function (newVal, oldVal) { 
+      this.user = await this.fetchUser(newVal) 
+      document.title = `Bitter Profile - ${this.user.username}`
+    }
   },
   async beforeMount() { if (this.username) this.user = await this.fetchUser(this.username) }
 }

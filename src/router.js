@@ -12,7 +12,8 @@ export const router = new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',
@@ -40,7 +41,7 @@ export const router = new Router({
       children: [
         {
           name: 'post',
-          path: 'post/:postId',
+          path: 'post/:linkedPost',
           props: true
         }
       ]

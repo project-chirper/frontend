@@ -1,9 +1,12 @@
 <template>
   <v-dialog width='700' persistent v-model='dialog'>
-    <v-btn round flat class='primary' slot='activator'>
-      Make a post
-      <v-icon right>publish</v-icon>
-    </v-btn>
+    <slot slot='activator'>
+      <v-btn round flat class='primary'>
+        Make a post
+        <v-icon right>publish</v-icon>
+      </v-btn>
+    </slot>
+
     <v-card>
       <v-card-title class='justify-center'>
         <span class='font-weight-bold title'>{{ title }}</span>
@@ -18,7 +21,7 @@
         <v-form v-model='valid' ref='messageForm'>
           <v-textarea box auto-grow clearable :counter='maxLength' 
             hint="Don't be too harsh!" 
-            label='Speak your mind' 
+            :label='action === "postreply" ? `Replying to ${replyingToUsername}` : "Speak your mind"' 
             placeholder='Blah blah blah' 
             append-icon='create'
             :rules='messageRules'
@@ -54,7 +57,9 @@ export default {
     targetPostId: { 
       type: String | Boolean,
       default: false
-    }
+    },
+
+    replyingToUsername: String // The username of the user replying to
   },
   data() {
     return {
