@@ -15,6 +15,9 @@ export const TOGGLE_POST_LIKE = "togglePostLike"
 export const FETCH_REPLIES = "fetchReplies"
 export const FETCH_REPLY_UPDATES = "fetchReplyUpdates"
 export const FETCH_POST = "fetchPost"
+export const CREATE_POST = "createPost"
+
+
 
 // Users
 export const TOGGLE_USER_FOLLOW = "toggleUserFollow"

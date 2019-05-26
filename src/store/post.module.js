@@ -8,7 +8,8 @@ import {
 	TOGGLE_POST_LIKE, 
   FETCH_REPLIES,
   FETCH_REPLY_UPDATES,
-	FETCH_POST
+  FETCH_POST,
+  CREATE_POST
 } from './actions.type'
 
 import {
@@ -134,11 +135,22 @@ const actions = {
 
     let { ok, data } = await PostService.fetchPost(postId)
 		if (ok) {
-      context.commit(POST_CACHE_ADD, post)
+      context.commit(POST_CACHE_ADD, data)
       return data
     }
 		else return false
   },
+
+  /**
+   * @desc Creates a post
+   */
+  async [CREATE_POST](context, { message, targetPostId, action }) {
+    let { ok, data } = await PostService.createPost({ message, targetPostId, action })
+    if (ok) {
+      context.commit(POST_CACHE_ADD, data) // Add new post to post cache
+      return data
+    }
+  }
 }
 
 const mutations = {

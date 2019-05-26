@@ -48,6 +48,7 @@ export default {
       if (loadMore && !this.canLoadMore) return false
       this.loading = false
       let repliesLength = this.replies.length
+      this.replies = [] // empty replies whilst we wait
       this.replies = await this.fetchReplies({ postId: this.postId, loadMore })
       this.loading = false
       if (this.replies.length-repliesLength < 10) this.canLoadMore = false

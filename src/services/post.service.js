@@ -10,6 +10,7 @@ export default {
 
     let query = author !== 'public' ? `post/author/${author}` : `post/timeline`
     let { data, status } = await ApiService.query(query, { offset, firstPostId })
+    
     return { ok: status === 200, data }
   },
   /**
@@ -21,7 +22,7 @@ export default {
     console.log("Fetched timeline updates.")
 
     if (author) return { ok: false } // not yet available for author
-    s
+    
     let { data, status } = await ApiService.query('post/timeline/new', { lastPostId })
     return { ok: status === 200, data }
   },
@@ -62,5 +63,28 @@ export default {
 	async fetchPost(postId) {
 		let { status, data } = await ApiService.get(`post/${postId}`)
 		return { ok: status === 200, data }
-	}
+  },
+  
+  /**
+   * @desc Creates a post
+   */
+  async createPost({ message, targetPostId, action }) {
+    // Setup the query for the respective action
+    let query
+    switch (action) {
+      case 'basepost':
+        query = `post`
+        break
+      case 'postreply':
+        query = `post/${targetPostId}/reply`
+        break
+      case 'repost':
+        query = `post/${targetPostId}/repost`
+        break
+    }
+
+    // Create POST request
+    let { status, data } = await ApiService.post(query, { message })
+    return { ok: status === 200, data }
+  }
 }

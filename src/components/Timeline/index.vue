@@ -1,10 +1,8 @@
 <template>
   <div>
     <div>
-      <v-btn round flat class='primary'>
-        Make a post
-        <v-icon right>publish</v-icon>
-      </v-btn>
+      <publisher action='basepost'/>
+
       <v-btn outline round color='tertiary' @click='fetchUpdates()'>
         Fetch New Posts
         <v-icon right>refresh</v-icon>
@@ -41,18 +39,19 @@ import { mapActions } from 'vuex'
 
 import { 
   FETCH_TIMELINE, 
-  FETCH_TIMELINE_UPDATES, 
-  FETCH_POST 
+  FETCH_TIMELINE_UPDATES,
+  FETCH_POST
 } from '@/store/actions.type'
 
 import Post from '@/components/Post'
 import Modal from '@/components/Post/Modal'
+import Publisher from '@/components/Post/Publisher'
 
 import getScrollPercent from '@/common/getScrollPercent'
 
 export default {
   components: {
-    Post, Modal
+    Post, Modal, Publisher
   },
   props: {
     from: { // Where to display posts from. If 'public', then it will show users public timeline. If user ID, it will show that users posts.
@@ -108,15 +107,13 @@ export default {
         await this.loadPosts({ loadMore: true })
       }
     },
+
     /**
-     * @desc Sets the linked to post to the focused post
+     * @desc Sets the linked to post
      */
     async setLinkedToPost() {
-      console.log("hi")
-      // Find if linked to post is already loaded
-      let matchedPost = this.posts.filter(post => post.id === this.linkedToPost)[0]
-      this.focusedPost = matchedPost ? matchedPost : await this.fetchPost(this.linkedToPost)
-      this.dialog = true // Manually open focused post
+      this.focusedPost = await this.fetchPost(this.linkedToPost)
+      this.dialog = true
     }
   },
   watch: {
@@ -138,6 +135,12 @@ export default {
     from: async function(newVal, oldVal) {
       this.posts = await this.fetchTimeline({ author: this.from }) // Fetch new posts
     },
+    /**
+     * @desc When linked to post is changed, open the dialog to show the new post
+     */
+    linkedToPost: async function(newVal, oldVal) {
+      await this.setLinkedToPost()
+    }
   },
   /**
    * @desc Load timeline for the first time

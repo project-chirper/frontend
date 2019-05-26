@@ -43,9 +43,6 @@ export default {
     },
     // Whether the current user profile is the authenticated user
     self: function() { return this.$store.state.user.data.id === this.user.id }
-  },
-  beforeMount() {
-    console.log(this.user)
   }
 }
 </script>
