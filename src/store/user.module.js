@@ -3,7 +3,7 @@ import AuthService from '../services/auth.service'
 import UserService from '../services/user.service'
 import JwtService from '../services/jwt.service'
 
-import Cache from '@mattl019/objectset'
+import Vue from 'vue'
 
 import {
   LOGIN, LOGOUT, REGISTER, CHECK_AUTH, 
@@ -11,19 +11,18 @@ import {
 } from './actions.type'
 
 import {
-  SET_AUTH, PURGE_AUTH, ADD_USER
+  SET_AUTH, PURGE_AUTH, ADD_USER, POST_CLEAR
 } from './mutations.type'
 
 const state = {
   data: {}, // Object to store user data
   isAuthed: !!JwtService.getToken(), // Whether the user is authenticated or not,
 
-  users: new Cache('username'), // { id, username, etc... }
-  timelines: new Cache('id')
+  users: {}, // { username (key), id, etc... }
 }
 
 const getters = {
-  user: state => username => state.users.get(username)
+  user: state => username => state.users[username]
 }
 
 const actions = {
@@ -48,7 +47,10 @@ const actions = {
   },
 
   // Logs out the user
-  [LOGOUT](context) { context.commit(PURGE_AUTH) },
+  [LOGOUT](context) {
+    context.commit(POST_CLEAR)
+    context.commit(PURGE_AUTH) 
+  },
 
   /**
    * @desc Checks auth of the user and logs in if possible
@@ -79,18 +81,14 @@ const actions = {
    * @return Commits user data into cache and returns it, or false if error
    */
   async [FETCH_USER](context, username) {
-    // If username is the user
-    if (context.state.data.username === username) return context.state.data
+    // If username is the current user
 
-    // Check chache for user first
-    let user = context.state.users.fetch(username)
-    if (user) return user
-
+    // Fetch user
     let { ok, data } = await UserService.fetchUser(username)
 
     if (ok) {
       context.commit(ADD_USER, data)
-      return data
+      return true
     }
     else return false
   }
@@ -104,12 +102,12 @@ const mutations = {
   },
   [PURGE_AUTH](state) {
     state.isAuthed = false
-    state.user = {}
+    state.data = {}
     JwtService.destroyToken()
     ApiService.setHeader() // update auth header with empty token
   },
   [ADD_USER](state, user) {
-    state.users.add(user)
+    Vue.set(state.users, user.username, user)
   }
 }
 

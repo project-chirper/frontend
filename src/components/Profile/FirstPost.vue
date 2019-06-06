@@ -2,7 +2,7 @@
   <div class='text-xs-center'>
     <h1 class='display-1 font-weight-thin mb-2'>New to Bitter?</h1>
     <p>Click below to make your first ever post!</p>
-    <publisher/>
+    <publisher action='basepost'/>
   </div>
 </template>
 

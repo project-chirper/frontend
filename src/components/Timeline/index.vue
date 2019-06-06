@@ -3,7 +3,7 @@
     <div>
       <publisher action='basepost'/>
 
-      <v-btn outline round color='tertiary' @click='fetchUpdates()'>
+      <v-btn outline round color='tertiary' @click='loadTimeline()'>
         Fetch New Posts
         <v-icon right>refresh</v-icon>
       </v-btn>
@@ -14,12 +14,13 @@
     <v-dialog full-width width='700' v-model='dialog' class='mb-5' content-class='timeline-modal'>
       <div slot='activator'>
         <Post 
-          v-for='(post, index) in posts' 
-          :key='post.id'
-          :post='post' 
+          v-for='(postId, index) in timeline' 
+          :key='postId'
+          :postId='postId'
           type='Timeline'
           :index='index'
-          @click.stop.native='changeFocus(post)'
+          @click.stop.native='changeFocus(postId)'
+          @view-reply='(replyId) => changeFocus(replyId)'
         />
       </div>
       <Modal :focusedPost='focusedPost'/>
@@ -28,8 +29,8 @@
     <div class="text-xs-center my-5" v-if='loading'>
 		  <v-progress-circular indeterminate class='primary--text'></v-progress-circular>
     </div>
-
-    <first-post v-if='posts.length === 0'/>
+    
+    <first-post v-if='timeline.length === 0'/>
 
   </div>
 </template>
@@ -37,11 +38,10 @@
 <script>
 import PostService from '@/services/post.service'
 
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import { 
   FETCH_TIMELINE, 
-  FETCH_TIMELINE_UPDATES,
   FETCH_POST
 } from '@/store/actions.type'
 
@@ -57,107 +57,93 @@ export default {
     Post, Modal, Publisher, FirstPost
   },
   props: {
-    from: { // Where to display posts from. If 'public', then it will show users public timeline. If user ID, it will show that users posts.
+    from: { // Which timeline to load
       type: String,
       default: 'public'
     },
-    linkedToPost: { // If user timeline, this will be the ID of the linked to focused post
+    linkedPostId: { // linked to post ID
       type: String | Boolean,
       default: false
     }
   },
   data() {
     return {
-      focusedPost: {}, // currently focusedPost in modal
-      dialog: false, // controls modal toggle,
-      loading: false, // controls loading circle
-      canLoadMore: true, // Whether you can load more or not
-
-      posts: [] // current posts
+      focusedPost: "", // the ID of the currently focused post
+      
+      dialog: false, // Controls modal toggle
+      loading: false, // Controls loading circle
+      canLoadMore: true // Whether we can load more timeline posts or not
+    }
+  },
+  computed: {
+    ...mapGetters({
+      getTimeline: 'timeline',
+      getPost: 'post'
+    }),
+    // Return timeline
+    timeline: function() {
+      return this.getTimeline(this.from)
+    },
+    // Return focused post
+    post: function() {
+       return this.getPost(this.focusedPost)
     }
   },
   methods: {
     ...mapActions({
-      fetchTimeline: FETCH_TIMELINE,
-      fetchUpdates: FETCH_TIMELINE_UPDATES,
-      fetchPost: FETCH_POST
+      fetchTimeline: FETCH_TIMELINE
     }),
-    changeFocus(post) { // changes the current modal post
-      this.focusedPost = post
-      this.dialog = true // manually opens modal
-    },
-    /**
-     * @desc Load posts
-     * @param loadMore whether to load more posts or not
-     * @returns Updates posts array
-     */
-    async loadPosts({ loadMore = false, updates = false }) {
-      if (loadMore && !this.canLoadMore) return false
-      this.loading = true
-      let postsLength = this.posts.length
-      this.posts = updates ? await this.fetchUpdates(this.from) : await this.fetchTimeline({ author: this.from, loadMore })
-      this.loading = false
-      if (this.posts.length-postsLength < 25) this.canLoadMore = false
-    },
-    /**
-     * @desc Loads more posts as user scrolls down the timeline
-     * @return Adds newly loaded posts to posts array
-     */
-    async loadMore() {
-      if (this.loading) return false // Return false if we are already loading posts
-      else if (this.posts.length < 25) return this.canLoadMore = false // If there are less than 25 posts, there are none more to load
-      else if (getScrollPercent() >= 90) { // If we have more posts to load and user has scrolled the appropriate amount
-        await this.loadPosts({ loadMore: true })
-      }
+
+    // Load initial/more/updated timeline
+    async loadTimeline({ loadMore = false } = {}) {
+      if (loadMore && !this.canLoadMore) return false // We can not load any more posts.
+      this.loading = true // Begin loading
+      // Fetch a new/more/updated timeline
+      let postCount = await this.fetchTimeline({ from: this.from, loadMore })
+      this.loading = false // Finish loading
+      if (postCount < 25 && loadMore) this.canLoadMore = false // If we load more posts less than 25, then there must be no more left to load
     },
 
-    /**
-     * @desc Sets the linked to post
-     */
-    async setLinkedToPost() {
-      if (this.linkedToPost) {
-        this.focusedPost = await this.fetchPost(this.linkedToPost)
-        this.dialog = true
-      }
+    // Event listener on 'scroll', triggers to loadMore timeline when scroll is at bottom
+    async loadMore() {
+      if (this.loading || !this.canLoadMore) return false // We can not load more whilst already loading
+      else if (getScrollPercent() >= 90) await this.loadTimeline({ loadMore: true }) // Load more timeline
+    },
+
+    // Changes current focusedPost
+    changeFocus(postId) {
+      this.focusedPost = postId // Switch focusedPost
+      this.dialog = true // open dialog
     }
   },
   watch: {
-    /**
-     * @desc Watches the dialog status to change the URL appropriately
-     */
-    dialog: function(newVal, oldVal) {
-      if (newVal === false) { // If the modal has been closed
-        this.$router.push(
-          this.from === 'public' ? '/' : `/user/${this.focusedPost.author.username}` // if viewing public, set to blank. If viewing a users posts, set to the user's profile url
-        ) // reset URL when user clicks off post modal
-      }
-    },
-    /**
-     * @desc Watches from prop so it can load the appropriate timeline
-     * @return Updates posts array to respective posts
-     */
+    // Fetches a new timeline when 'from' value changes
     from: async function(newVal, oldVal) {
-      this.posts = await this.fetchTimeline({ author: this.from }) // Fetch new posts
+      if (!this.timeline) await this.fetchTimeline({ author: newVal })
     },
-    /**
-     * @desc When linked to post is changed, open the dialog to show the new post
-     */
-    linkedToPost: async function(newVal, oldVal) {
-      await this.setLinkedToPost()
+    // change focus whenever linkedPostId is changed
+    linkedPostId: function(newVal, oldVal) {
+      if(newVal) this.changeFocus(newVal)
+    },
+    // Set the URL appropriately
+    dialog: function(newVal, oldVal) {
+      if (newVal === false) { // The modal has been closed
+        this.$router.push(
+          this.from === 'public' ? '/' : `/user/${this.post.author.username}` // If viewing public, set to root. If viewing a user timeline, set to user's profile URL
+        )
+        this.focusedPost = "" // Reset focusedPost
+      }
     }
   },
-  /**
-   * @desc Load timeline for the first time
-   */
   async beforeMount() {
-    await this.loadPosts({ updates: this.posts.length }) // load timeline and fetch updates if timeline already loaded
-    await this.setLinkedToPost() // check if linkedToPost, if so set it
+    await this.loadTimeline() // Load the timeline
+    if (this.linkedPostId) this.changeFocus(this.linkedPostId)
 
-    // Add event listener for scrolling to check updates
+    // Add an event listener on scroll to load more as user scrolls to bottom of page
     document.addEventListener('scroll', this.loadMore)
   },
   beforeDestroy() {
-    document.removeEventListener('scroll', this.loadMore) // remove event listener on destroy
+    document.removeEventListener('scroll', this.loadMore) // Remove event listener
   }
 }
 </script>

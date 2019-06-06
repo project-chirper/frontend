@@ -9,7 +9,12 @@ export const SET_ERROR = "setError";
 
 // Timeline
 export const TIMELINE_SET = "timelineSet"
-export const POST_CACHE_ADD = "postCacheAdd"
+
+// Posts
+export const POST_ADD_MANY = "postAddMany"
+export const POST_ADD = "postAdd"
+export const POST_UPDATE = "postUpdate"
+export const POST_CLEAR = "postClear"
 
 // Replies
 export const REPLIES_SET = "repliesSet"

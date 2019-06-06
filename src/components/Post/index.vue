@@ -1,5 +1,6 @@
 <template>
   <v-card>
+
     <v-card-title :class='{ "py-2": view === "Timeline" || "Reply", "py-3": view === "Focused" }'>
       <span :class='{
         "subheading": view === "Timeline",
@@ -16,7 +17,7 @@
     <v-divider></v-divider>
 
     <v-card-text class='pt-2 pt-0' :class='{ "pb-2": view === "Reply" }'>
-      <span @click.stop='$router.push({ name: "post", params: { username: post.body.replyingTo.author.username, postId: post.body.replyingTo.id } })'
+      <span @click.stop='$emit("view-reply", post.body.replyingTo.id)'
         v-if='post.type === "PostReply"' 
         class='accent--text link' :class='{ "caption": view === "Reply" }'>
         replying to {{ post.body.replyingTo.author.username }}
@@ -42,7 +43,7 @@
         {{ post.stats.reposts }}
       </v-btn>
 
-      <v-btn small flat :color='post.hasLiked ? "tertiary" : "accent"' title='Dislike' @click.stop.native='likePost()'>
+      <v-btn small flat :color='post.hasLiked ? "tertiary" : "accent"' title='Dislike' @click.stop.native='toggleLike(postId)'>
         <v-icon left :small='view === "Reply"'>thumb_down</v-icon>
         {{ post.stats.likes }}
       </v-btn>
@@ -55,8 +56,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import { TOGGLE_POST_LIKE } from '@/store/actions.type'
+import { mapActions, mapGetters } from 'vuex'
+import { TOGGLE_POST_LIKE, FETCH_POST } from '@/store/actions.type'
 
 import FollowBtn from '@/components/Profile/FollowBtn'
 import Publisher from './Publisher'
@@ -64,7 +65,7 @@ import Publisher from './Publisher'
 export default {
   name: 'Post',
   props: {
-    post: Object, // Preloaded Post Object
+    postId: String, // post ID
     depth: { // depth of post
       type: Number,
       default: 0
@@ -73,16 +74,23 @@ export default {
     index: Number
   },
   components: { FollowBtn, Publisher },
+  computed: {
+    ...mapGetters({
+      getPost: "post"
+    }),
+    post: function() {
+      return this.getPost(this.postId)
+    }
+  },
   methods: {
     ...mapActions({
-      toggleLike: TOGGLE_POST_LIKE
-    }),
-    // Likes a post
-    async likePost() {
-      await this.toggleLike(this.post.id)
-      this.post.hasLiked = !this.post.hasLiked
-      this.post.hasLiked ? this.post.stats.likes++ : this.post.stats.likes--
-    }
+      toggleLike: TOGGLE_POST_LIKE,
+      fetchPost: FETCH_POST
+    })
+  },
+  async beforeMount() {
+    // load post if need be
+    if (!this.post) await this.fetchPost(this.postId)
   }
 }
 </script>

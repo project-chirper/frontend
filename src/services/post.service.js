@@ -61,6 +61,8 @@ export default {
 	 * @param postId Post ID to fetch
 	 */
 	async fetchPost(postId) {
+    console.log("Fetched post.")
+
 		let { status, data } = await ApiService.get(`post/${postId}`)
 		return { ok: status === 200, data }
   },
