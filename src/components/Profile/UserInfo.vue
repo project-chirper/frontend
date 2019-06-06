@@ -17,8 +17,8 @@
         </v-layout>
     </v-card-text>
 
-    <v-divider v-if='!self'></v-divider>
-    <v-card-actions class='px-2' v-if='!self'>
+    <v-divider v-if='!userId === "self"'></v-divider>
+    <v-card-actions class='px-2' v-if='userId === "self"'>
       <v-spacer></v-spacer>
       <follow-btn :userId='user.id' :isFollowing='user.isFollowed'/>
     </v-card-actions>
@@ -27,22 +27,31 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import FollowBtn from './FollowBtn'
 
 export default {
   props: {
-    user: Object // The user to display info of
+    userId: { // ID of the user displaying, self if currently logged in user
+      type: String,
+      default: 'self'
+    }
   },
   components: { FollowBtn },
   computed: {
+    ...mapGetters({
+      getUser: 'user'
+    }),
+    user: function() {
+      return this.userId === 'self' ? this.$store.state.user.data : this.getUser(this.userId)
+    },
     stats: function() {
       return [
         { label: `Follower${ this.user.followerCount === 1 ? '' : 's' }`, value: this.user.followerCount },
         { label: 'Following', value: this.user.followingCount }
       ]
-    },
-    // Whether the current user profile is the authenticated user
-    self: function() { return this.$store.state.user.data.id === this.user.id }
+    }
   }
 }
 </script>

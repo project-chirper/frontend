@@ -1,195 +1,180 @@
 import PostService from '../services/post.service'
-
-import Cache from '@mattl019/objectset'
+import Vue from 'vue'
 
 import {
-	FETCH_TIMELINE,
-	FETCH_TIMELINE_UPDATES, 
-	TOGGLE_POST_LIKE, 
+  FETCH_TIMELINE,
   FETCH_REPLIES,
-  FETCH_REPLY_UPDATES,
   FETCH_POST,
-  CREATE_POST
+  CREATE_POST,
+  TOGGLE_POST_LIKE
 } from './actions.type'
 
 import {
-  REPLIES_SET, TIMELINE_SET, POST_CACHE_ADD
+  TIMELINE_SET,
+  REPLIES_SET,
+  POST_ADD,
+  POST_ADD_MANY,
+  POST_UPDATE,
+  POST_CLEAR
 } from './mutations.type'
 
 const state = {
-  timelines: new Cache("from"), // { from: 'public' | 'username', posts: [],  page: 0, firstPostId: undefined }
-  replies: new Cache("postId"), // { postId (ukey), posts, firstReplyId, page }
-  posts: new Cache("id") // { id (ukey), body, author, ... } regular post cache
+  posts: {}, // { key: id, body, author, ... } regular post cache
+  timelines: {}, // { key: 'public' | 'username' (ukey), postIds: [], page, firstPostId }
+  replies: {} // { key: postId, postIds: [], firstReplyId, page }
 }
 
 const getters = {
-
+  post: state => id => {
+    return state.posts[id] ? state.posts[id] : false
+  },
+  timeline: state => from => {
+    return state.timelines[from] ? state.timelines[from].postIds : false
+  },
+  replies: state => postId => {
+    return state.replies[postId] ? state.replies[postId].postIds : false
+  }
 }
 
 const actions = {
-  /**
-   * @desc Fetches the timeline, with the current page.
-   * @returns Whole timeline, or false
-   */
-  async [FETCH_TIMELINE](context, { loadMore = false, author = 'public' }) {
-    // Check cache for timeline
-    let timeline = context.state.timelines.fetch(author)
-    if (timeline && !loadMore) return timeline.posts
+  async [FETCH_TIMELINE](context, { from = 'public', loadMore = false }) {
+    // Get current timeline if exists
+    let timeline = context.state.timelines[from] ? context.state.timelines[from] : {}
 
-    let { ok, data } = await PostService.fetchTimeline(
-      timeline.page, // current page
-      timeline.firstPostId, // first post id fetched,
-      author
-    )
+   // Fetch new/more/updated timeline
+    let { ok, data } = (timeline.postIds && !loadMore) > 0 ? 
+      await PostService.fetchTimelineUpdates(timeline.postIds[0], from) : // Fetch updates
+      await PostService.fetchTimeline( // Fetch timeline/load more
+        timeline.page,
+        timeline.firstPostId,
+        from
+      )
 
-		if (ok) {
-      if (author !== 'public') data.posts = data.posts.map(post => {
-        post.author = data.author
-        return post
-      })
-
-      let posts = timeline ? timeline.posts.concat(data.posts) : data.posts
-      context.commit(TIMELINE_SET, { posts, author }) // append to cache
-      return posts
-    } else return false
-  },
-  /**
-   * @desc Fetches timeline updates
-   * @returns Whole timeline with updates
-   */
-  async [FETCH_TIMELINE_UPDATES](context, author = 'public') {
-    let timeline = context.state.timelines.fetch(author)
-    if (!timeline || (timeline && timeline.posts.length === 0)) return await context.dispatch(FETCH_TIMELINE, { author }) // If there are zero posts, simply try to fetch a new timeline
-
-    let { ok, data } = await PostService.fetchTimelineUpdates(timeline.posts[0].id, author)
     if (ok) {
-      if (author !== 'public') data.posts = data.posts.map(post => {
+      // If timeline is from a user, append author object to each post object
+      if (from !== 'public') data.posts = data.posts.map(post => {
         post.author = data.author
         return post
       })
 
-      let posts = data.posts.concat(timeline.posts)
-      context.commit(TIMELINE_SET, { posts, author }) // add to cache
-      return posts
-    } else return false
-  },
-  /**
-   * @desc Toggles the like on a post
-   * @param postId The post ID to toggle like for
-   * @return True if successful, false if error
-   */
-  async [TOGGLE_POST_LIKE](context, postId) {
-    let ok = await PostService.likePost(postId)
-    return ok
+      let postIds = data.posts.map(post => post.id) // Compile all post ids
+      context.commit(POST_ADD_MANY, data.posts) // add posts
+      context.commit(TIMELINE_SET, { postIds, from, update: (timeline.postIds && !loadMore) }) // add post ids to timeline
+      return postIds.length // Return the length of posts returned
+    }
   },
 
-  /**
-   * @desc Fetches replies for a post
-   * @param postId THe post ID to fetch replies for
-   * @param loadMore Whether to fetch next page or not
-   * @returns Number of replies fetched, or false if error
-   */
   async [FETCH_REPLIES](context, { postId, loadMore = false }) {
-    let replies = context.state.replies.fetch(postId) // Check cache for reply block
+    // Load reply block if exists
+    let replies = context.state.replies[postId] ? context.state.replies[postId] : {}
 
-    if (replies && !loadMore) return replies.posts // Reply block found, but no load more, so just return replies
-
-    let { ok, data } = await PostService.fetchReplies(postId, replies.page, replies.firstReplyId)
+    // Fetch new/more/updated replies
+    let { ok, data } = (replies.postIds && replies.postIds.length && !loadMore) ? 
+      await PostService.fetchReplyUpdates(postId, replies.postIds[0]) :
+      await PostService.fetchReplies(postId,
+        replies.page,
+        replies.firstPostId
+      )
 
     if (ok) {
-      data.replies = data.replies.map(reply => {
-        reply.body.replyingTo = data.replyingTo
-        return reply
-      })
-      let posts = replies ? replies.posts.concat(data.replies) : data.replies
-      context.commit(REPLIES_SET, { postId, posts })
-      return posts
-    } else return false
-  },
-
-  /**
-   * @desc Fetches reply updates for a post (new replies)
-   * @param postId the post id to search reply updates for
-   * @returns Number of updated replies fetched, or false if error
-   */
-  async [FETCH_REPLY_UPDATES](context, postId) {
-    let replies = context.state.replies.fetch(postId) // fetch reply block
-    if (!replies || !replies.posts[0]) return await context.dispatch(FETCH_REPLIES, { postId }) // There are no replyblock or zero replies, try to fetch them
-
-    let { ok, data } = await PostService.fetchReplyUpdates(postId, replies.posts[0].id)
-    if (ok) {
+      // Add the 'replyingTo' object to each post object
       data.replies = data.replies.map(reply => {
         reply.body.replyingTo = data.replyingTo
         return reply
       })
 
-      let posts = data.replies.concat(replies.posts)
-      context.commit(REPLIES_SET, { postId, posts })
-      return posts
-    } else return false
-  },
-  
-	async [FETCH_POST](context, postId) {
-    let post = context.state.posts.fetch(postId)
-    if (post) return post // If post is in posts cache, simply return it
-
-    let { ok, data } = await PostService.fetchPost(postId)
-		if (ok) {
-      context.commit(POST_CACHE_ADD, data)
-      return data
+      let postIds = data.replies.map(post => post.id) // Compile post ids
+      context.commit(POST_ADD_MANY, data.replies) // Add posts
+      context.commit(REPLIES_SET, { postId, postIds }) // add post ids to reply block
+      return postIds.length // Return the length of replies returned
     }
-		else return false
   },
 
-  /**
-   * @desc Creates a post
-   */
+  async [FETCH_POST](context, postId) {
+    let { ok, data } = await PostService.fetchPost(postId) // Fetch post
+    if (ok) {
+      context.commit(POST_ADD, data) // Add post
+      return true
+    } else return false
+  },
+
   async [CREATE_POST](context, { message, targetPostId, action }) {
-    let { ok, data } = await PostService.createPost({ message, targetPostId, action })
+    let { ok, data } = await PostService.createPost({ message, targetPostId, action }) // Create post
     if (ok) {
-      context.commit(POST_CACHE_ADD, data) // Add new post to post cache
-      return data
-    }
+      context.commit(POST_ADD, data) // Add post
+      context.commit(TIMELINE_SET, { from: 'public', postIds: [data.id], update: true }) // Add to timeline
+      if(context.state.timelines[data.author.id]) context.commit(TIMELINE_SET, { from: data.author.id, postIds: [data.id], update: true }) // Add to user's own timeline if applicable
+      return data.id // Return ID of the post
+    } else return false
+  },
+
+  async [TOGGLE_POST_LIKE](context, postId) {
+    let ok = await PostService.likePost(postId) // Toggle post like
+    if (ok) {
+      let newStatus = !context.state.posts[postId].hasLiked
+
+      context.commit(POST_UPDATE, { 
+        id: postId, 
+        hasLiked: newStatus,
+        stats: { ...context.state.posts[postId].stats, likes: context.state.posts[postId].stats.likes + (newStatus ? 1 : -1) }
+      }) // Update post
+      return true
+    } else return false
   }
 }
 
 const mutations = {
-  [TIMELINE_SET](state, { posts, author }) {
-    let timeline = state.timelines.fetch(author)
-    if (timeline) {
-      state.timelines.update(author, {
-        ...timeline,
-        posts,
-        page: timeline.page + 1,
-      })
-    } else {
-      state.timelines.add({
-        from: author,
+  // Timeline
+  [TIMELINE_SET](state, { from, postIds, update = false }) {
+    // Grab timeline if exists
+    let timeline = state.timelines[from]
+    if (timeline) { // Timeline exists, update it
+      Vue.set(state.timelines[from], 'postIds', update ? postIds.concat(timeline.postIds) : timeline.postIds.concat(postIds)) // appropriately append/prepend postIds
+      Vue.set(state.timelines[from], 'page', timeline.page + 1) // increase page
+    } else { // Timeline does not exist, create a new one
+      Vue.set(state.timelines, from, {
         page: 1,
-        posts,
-        firstReplyId: posts[0] ? posts[0].id : undefined
+        postIds,
+        firstPostId: postIds[0]
       })
     }
   },
-  [REPLIES_SET](state, { postId, posts }) {
-    let replies = state.replies.fetch(postId) // current reply block
-    if (replies) { // reply block exists
-      state.replies.update(postId, {
-        ...replies,
-        posts,
-        page: replies.page + 1,
-      })
-    } else { // Reply block doesn't exist
-      state.replies.add({
-        postId,
+
+  // Replies
+  [REPLIES_SET](state, { postId, postIds, update = false }) {
+    // Grab reply block if exists
+    let replies = state.replies[postId]
+    if (replies) { // Reply block exists, update it
+      Vue.set(state.replies[postId], 'postIds', update ? postIds.concat(replies.postIds) : replies.postIds.concat(postIds)) // appropriately append/prepend postIds
+      Vue.set(state.replies[postId], 'page', replies.page + 1) // increase page
+    } else { // Reply block does not exist, create a new one
+      Vue.set(state.replies, postId, {
         page: 1,
-        posts,
-        firstReplyId: posts[0] ? posts[0].id : undefined
+        postIds,
+        firstReplyId: postIds[0]
       })
     }
   },
-  [POST_CACHE_ADD](state, post) {
-    state.posts.add(post)
+
+  // Posts
+  [POST_ADD_MANY](state, posts) {
+    for(let post of posts) { // Loop through each post and append to 'posts' object with key as post id
+      Vue.set(state.posts, post.id, post)
+    }
+  },
+  [POST_ADD](state, post) {
+    Vue.set(state.posts, post.id, post)
+  },
+  [POST_UPDATE](state, updatedFields) {
+    Vue.set(state.posts, updatedFields.id, {
+      ...state.posts[updatedFields.id],
+      ...updatedFields
+    })
+  },
+  [POST_CLEAR](state) {
+    Vue.set(state, 'posts', {})
+    Vue.set(state, 'timelines', {})
+    Vue.set(state, 'replies', {})
   }
 }
 

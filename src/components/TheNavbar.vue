@@ -70,9 +70,8 @@ export default {
       if (!nav.click) return false
       switch(nav.click) {
         case 'logout':
-          this.$store.dispatch(LOGOUT).then(() => {
-            this.$router.push({ name: 'home' })
-          })
+          this.$store.dispatch(LOGOUT)
+          this.$router.push({ name: 'login' })
           break
       }
       return true

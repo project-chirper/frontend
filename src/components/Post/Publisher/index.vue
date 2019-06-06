@@ -100,22 +100,25 @@ export default {
     async submitPost() {
       if (!this.$refs.messageForm.validate()) return false // Form is not valid
       this.loading = true
-      let post = await this.createPost({
+      let postId = await this.createPost({
         message: this.message,
         targetPostId: this.targetPostId,
         action: this.action
       })
 
-      console.log(`New Post | ${this.action} - ${this.targetPostId} - ${this.message}`, post) // debugging, remove later
-
+      console.log(`New Post | ${this.action} - ${this.targetPostId} - ${this.message}`, postId) // debugging, remove later
 
       this.dialog = false // Close dialog
       this.message = '' // Reset dialog
-      return this.$router.push({ 
+
+      //history.pushState({}, null, `/user/${this.$store.state.user.data.username}/post/${postId}`)
+
+      
+      this.$router.push({ 
         name: 'post', 
         params: { 
           username: this.$store.state.user.data.username,
-          postId: post.id
+          linkedPostId: postId
         } 
       })
     }
