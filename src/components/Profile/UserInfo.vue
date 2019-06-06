@@ -44,12 +44,12 @@ export default {
       getUser: 'user'
     }),
     user: function() {
-      return this.userId === 'self' ? this.$store.state.user.data : this.getUser(this.userId)
+      return this.userId === 'self' || this.$store.state.user.data.id === this.userId ? this.$store.state.user.data : this.getUser(this.userId)
     },
     stats: function() {
       return [
-        { label: `Follower${ this.user.followerCount === 1 ? '' : 's' }`, value: this.user.followerCount },
-        { label: 'Following', value: this.user.followingCount }
+        { label: 'Following', value: this.user.followingCount },
+        { label: `Follower${ this.user.followerCount === 1 ? '' : 's' }`, value: this.user.followerCount }
       ]
     }
   }

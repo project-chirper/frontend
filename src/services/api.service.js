@@ -14,7 +14,7 @@ function handleResponse(response) {
       router.push({ name: 'login' })
       return true
     case 404:
-      alert('404 Not Found')
+      router.push({ name: '404' })
       return true
     case 500:
       alert('500 Internal Server Error')

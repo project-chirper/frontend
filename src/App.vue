@@ -13,12 +13,7 @@ import TheNavbar from '@/components/TheNavbar'
 
 export default {
   name: 'App',
-  components: { TheNavbar },
-  computed: {
-    timeline: function() {
-      return this.$store.getters.timeline("public")
-    }
-  }
+  components: { TheNavbar }
 }
 </script>
 

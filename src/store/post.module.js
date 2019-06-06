@@ -129,7 +129,7 @@ const mutations = {
     // Grab timeline if exists
     let timeline = state.timelines[from]
     if (timeline) { // Timeline exists, update it
-      Vue.set(state.timelines[from], 'postIds', update ? postIds.concat(timeline.postIds) : timeline.postIds.concat(postIds)) // appropriately append/prepend postIds
+      Vue.set(state.timelines[from], 'postIds', [... new Set(update ? postIds.concat(timeline.postIds) : timeline.postIds.concat(postIds))]) // appropriately append/prepend postIds
       Vue.set(state.timelines[from], 'page', timeline.page + 1) // increase page
     } else { // Timeline does not exist, create a new one
       Vue.set(state.timelines, from, {
@@ -145,7 +145,7 @@ const mutations = {
     // Grab reply block if exists
     let replies = state.replies[postId]
     if (replies) { // Reply block exists, update it
-      Vue.set(state.replies[postId], 'postIds', update ? postIds.concat(replies.postIds) : replies.postIds.concat(postIds)) // appropriately append/prepend postIds
+      Vue.set(state.replies[postId], 'postIds', [... new Set(update ? postIds.concat(replies.postIds) : replies.postIds.concat(postIds))]) // appropriately append/prepend postIds
       Vue.set(state.replies[postId], 'page', replies.page + 1) // increase page
     } else { // Reply block does not exist, create a new one
       Vue.set(state.replies, postId, {

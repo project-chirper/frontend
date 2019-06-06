@@ -47,6 +47,13 @@ export const router = new Router({
           props: true // The prop 'linkedPost' which is the post ID is passed to the Profile component, then to the Timeline component which loads and focuses it
         }
       ]
+    },
+
+    // 404
+    {
+      name: '404',
+      path: '*',
+      component: () => import('./views/404')
     }
   ]
 })

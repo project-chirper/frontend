@@ -5,7 +5,7 @@
         <user-info v-if='$store.state.user.isAuthed'/>
       </v-flex>
 
-      <v-flex xs12 md10 lg8 xl4>
+      <v-flex xs12 md10 lg6 xl4>
         <timeline/>
       </v-flex>
 
