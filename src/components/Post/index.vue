@@ -17,8 +17,8 @@
     <v-divider></v-divider>
 
     <v-card-text class='pt-2 pt-0' :class='{ "pb-2": view === "Reply" }'>
-      <span @click.stop='$emit("view-reply", post.body.replyingTo.id)'
-        v-if='post.type === "PostReply"' 
+      <span @click.stop='viewReply'
+        v-if='post.type === "PostReply"'
         class='accent--text link' :class='{ "caption": view === "Reply" }'>
         replying to {{ post.body.replyingTo.author.username }}
         <v-icon small color='accent'>remove_red_eye</v-icon>
@@ -86,7 +86,20 @@ export default {
     ...mapActions({
       toggleLike: TOGGLE_POST_LIKE,
       fetchPost: FETCH_POST
-    })
+    }),
+    viewReply() {
+      if(this.view === "Timeline") {
+        this.$emit("view-reply", this.post.body.replyingTo.id)
+      } else {
+        this.$router.push({ 
+          name: "post", 
+          params: { 
+            username: this.post.body.replyingTo.author.username,
+            linkedPostId: this.post.body.replyingTo.id
+          }
+        })
+      }
+    }
   },
   async beforeMount() {
     // load post if need be

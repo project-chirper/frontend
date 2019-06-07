@@ -10,9 +10,6 @@
       <v-alert type='warning' :value='true' color='primary' class='mt-5'>
         You may be seeing this page if we could not find the requested post or user, or if we have a screw loose on our website (we are still in development!).
       </v-alert>
-
-
-
     </v-flex>
   </v-layout>
 </template>

@@ -18,9 +18,9 @@
     </v-card-text>
 
     <v-divider v-if='!userId === "self"'></v-divider>
-    <v-card-actions class='px-2' v-if='userId === "self"'>
+    <v-card-actions class='px-2'>
       <v-spacer></v-spacer>
-      <follow-btn :userId='user.id' :isFollowing='user.isFollowed'/>
+      <follow-btn v-if='userId !== "self"' :userId='user.id' :isFollowing='user.isFollowed'/>
     </v-card-actions>
 
   </v-card>

@@ -17,7 +17,7 @@
           v-for='(postId, index) in timeline' 
           :key='postId'
           :postId='postId'
-          type='Timeline'
+          view='Timeline'
           :index='index'
           @click.stop.native='changeFocus(postId)'
           @view-reply='(replyId) => changeFocus(replyId)'
@@ -91,7 +91,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchTimeline: FETCH_TIMELINE
+      fetchTimeline: FETCH_TIMELINE,
+      fetchPost: FETCH_POST
     }),
 
     // Load initial/more/updated timeline
@@ -133,6 +134,10 @@ export default {
         )
         this.focusedPost = "" // Reset focusedPost
       }
+    },
+    // Fetch post if needed
+    focusedPost: async function(newVal, oldVal) {
+      if (!this.post && newVal) await this.fetchPost(newVal)
     }
   },
   async beforeMount() {
