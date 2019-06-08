@@ -17,23 +17,39 @@
         </v-layout>
     </v-card-text>
 
-    <v-divider v-if='!userId === "self"'></v-divider>
+    <v-divider></v-divider>
     <v-card-actions class='px-2'>
+
+      <v-tooltip bottom v-if='self'>
+        <v-btn color='white' fab small flat slot='activator' router to='/account'>
+          <v-icon>settings</v-icon>
+        </v-btn>
+        <span>Account Settings</span>
+      </v-tooltip>
+
+      <v-tooltip bottom v-if='self'>
+        <v-btn color='white' fab small flat slot='activator' @click='logout()'>
+          <v-icon>exit_to_app</v-icon>
+        </v-btn>
+        <span>Logout</span>
+      </v-tooltip>
+
       <v-spacer></v-spacer>
-      <follow-btn v-if='userId !== "self"' :userId='user.id' :isFollowing='user.isFollowed'/>
+      <follow-btn v-if='!self' :userId='user.id' :isFollowing='user.isFollowed'/>
     </v-card-actions>
 
   </v-card>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import { LOGOUT } from '@/store/actions.type'
 
 import FollowBtn from './FollowBtn'
 
 export default {
   props: {
-    userId: { // ID of the user displaying, self if currently logged in user
+    username: { // ID of the user displaying, self if currently logged in user
       type: String,
       default: 'self'
     }
@@ -44,13 +60,25 @@ export default {
       getUser: 'user'
     }),
     user: function() {
-      return this.userId === 'self' || this.$store.state.user.data.id === this.userId ? this.$store.state.user.data : this.getUser(this.userId)
+      return this.self ? this.$store.state.user.data : this.getUser(this.username)
+    },
+    self: function() {
+      return this.username === "self" || this.username === this.$store.state.user.data.username
     },
     stats: function() {
       return [
         { label: 'Following', value: this.user.followingCount },
         { label: `Follower${ this.user.followerCount === 1 ? '' : 's' }`, value: this.user.followerCount }
       ]
+    }
+  },
+  methods: {
+    ...mapActions({
+      logoutUser: LOGOUT
+    }),
+    logout() {
+      this.logoutUser()
+      this.$router.push({ name: 'login' })
     }
   }
 }

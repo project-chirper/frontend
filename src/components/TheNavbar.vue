@@ -45,7 +45,7 @@ export default {
       navListRaw: [
         { name: 'Home', icon: 'home', route: '/', desc: 'View your timeline' },
         { name: () => this.$store.state.user.data.username, icon: 'person', route: () => `/user/${this.$store.state.user.data.username}`, requiresAuth: true },
-        { name: 'Logout', icon: 'exit_to_app', click: 'logout', desc: 'Logout', requiresAuth: true },
+        //{ name: 'Logout', icon: 'exit_to_app', click: 'logout', desc: 'Logout', requiresAuth: true },
 
         { name: 'Login', route: '/login', desc: 'Login to your account', requiresNoAuth: true },
         { name: 'Register', route: '/register', desc: 'Register an account', requiresNoAuth: true },

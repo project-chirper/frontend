@@ -49,6 +49,18 @@ export const router = new Router({
       ]
     },
 
+    {
+      path: '/account',
+      name: 'account',
+      redirect: '/account/details',
+      component: () => import('./views/Account/index.vue'),
+      meta: { title: 'Bitter Account' },
+      children: [
+        { name: 'details', path: 'details', component: () => import('./views/Account/Details') },
+        { name: 'display-info', path: 'display-info', component: () => import('./views/Account/DisplayInfo') }
+      ]
+    },
+
     // 404
     {
       name: '404',
