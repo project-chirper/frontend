@@ -6,32 +6,47 @@
 
     <v-form>
 
-      <v-text-field box
-        label='Username'
-        color='accent'
-        append-icon='person'
-        required
-        readonly
-        :value='user.username'>
-      </v-text-field>
+      <div class='mb-4'>
+        <v-text-field box
+          label='Username'
+          color='accent'
+          append-icon='person'
+          required
+          readonly
+          :value='user.username'
+          hide-details>
+        </v-text-field>
+      </div>
 
-      <v-text-field box
-        label='Email'
-        color='accent'
-        append-icon='email'
-        required
-        readonly
-        :value='user.email'>
-      </v-text-field>
+      <div class='mb-4'>
+        <v-text-field box
+          label='Email'
+          color='accent'
+          append-icon='email'
+          required
+          readonly
+          :value='user.email.address'
+          hide-details>
+        </v-text-field>
 
-      <v-text-field box
-        label='Date registered'
-        color='accent'
-        append-icon='date_range'
-        required
-        readonly
-        :value='dateCreated'>
-      </v-text-field>
+        <div class='mt-3 accent--text'>
+          <p v-if='user.email.verified'>Your email address is verified <v-icon color='accent'>verified_user</v-icon></p>
+          <p v-else>Your email address is not verified. Check your email for a verification link.</p>
+        </div>
+
+      </div>
+
+      <div class='mb-4'>
+        <v-text-field box
+          label='Date registered'
+          color='accent'
+          append-icon='date_range'
+          required
+          readonly
+          :value='dateCreated'
+          hide-details>
+        </v-text-field>
+      </div>
 
     </v-form>
   </div>

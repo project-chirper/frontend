@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <the-navbar/>
+    <navbar/>
 
     <v-content>
       <router-view/>
@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import TheNavbar from '@/components/TheNavbar'
+import Navbar from '@/components/Navbar/index'
 
 export default {
   name: 'App',
-  components: { TheNavbar }
+  components: { Navbar }
 }
 </script>
 

@@ -30,7 +30,7 @@
 		  <v-progress-circular indeterminate class='primary--text'></v-progress-circular>
     </div>
     
-    <first-post v-if='timeline.length === 0'/>
+    <first-post v-if='timeline.length === 0 && (from === "public" || from === $store.state.user.data.id)'/>
 
   </div>
 </template>

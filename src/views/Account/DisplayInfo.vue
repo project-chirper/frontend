@@ -5,14 +5,18 @@
     <v-divider class='mb-4'></v-divider>
 
     <v-form>
-      <v-text-field box
-        label='Bio'
-        color='accent'
-        append-icon='pencil'
-        required
-        readonly
-        :value='user.profile.bio'>
-      </v-text-field>
+      <div class='mb-4'>
+        <v-text-field box
+          label='Bio'
+          color='accent'
+          append-icon='pencil'
+          required
+          readonly
+          :value='user.profile.bio'
+          hide-details>
+        </v-text-field>
+      </div>
+
     </v-form>
   </div>
 </template>

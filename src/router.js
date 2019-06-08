@@ -61,6 +61,15 @@ export const router = new Router({
       ]
     },
 
+    // Email verification
+    {
+      path: '/verify-email/:uniqueCode',
+      name: 'verify-email',
+      component: () => import('./views/VerifyEmail'),
+      meta: { title: 'Bitter Verify Email' },
+      props: true
+    },
+
     // 404
     {
       name: '404',

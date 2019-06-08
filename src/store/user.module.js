@@ -7,7 +7,7 @@ import Vue from 'vue'
 
 import {
   LOGIN, LOGOUT, REGISTER, CHECK_AUTH, 
-  TOGGLE_USER_FOLLOW, FETCH_USER
+  TOGGLE_USER_FOLLOW, FETCH_USER, CHECK_EMAIL_VERIFICATION, SEARCH_USER
 } from './actions.type'
 
 import {
@@ -91,6 +91,16 @@ const actions = {
       return true
     }
     else return false
+  },
+
+  async [CHECK_EMAIL_VERIFICATION](context, uniqueCode) {
+    let ok = await UserService.checkEmailVerification(uniqueCode)
+    if (ok) return true; else return false
+  },
+
+  async [SEARCH_USER](context, { username, offset }) {
+    let { ok, data } = await UserService.searchUser(username, offset)
+    if (ok) return data; else return false
   }
 }
 

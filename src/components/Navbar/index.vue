@@ -1,7 +1,11 @@
 <template>
   <v-toolbar app dense flat color='toolbar'>
+    
     <v-toolbar-title class='headline font-weight-light'>Bitter</v-toolbar-title>
     <v-spacer></v-spacer>
+
+    <search/>
+
     <v-toolbar-items class='hidden-sm-and-down'>
       <v-btn flat
         v-for='(nav, key) in navListAvailable'
@@ -38,8 +42,13 @@
 <script>
 import { LOGOUT } from '@/store/actions.type'
 
+import Search from './Search'
+
 export default {
   name: 'navbar',
+  components: {
+    Search
+  },
   data() {
     return {
       navListRaw: [

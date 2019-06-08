@@ -20,5 +20,16 @@ export default {
   async followUser(userId) {
     let { status } = await ApiService.put(`user/${userId}/follow`)
     return status === 200
+  },
+
+  async checkEmailVerification(uniqueCode) {
+    let { status } = await ApiService.get(`user/verify-email/${uniqueCode}`)
+    return status === 200
+  },
+
+  // Search for a user
+  async searchUser(username, offset = 0) {
+    let { status, data } = await ApiService.query('user/search-user', { username, offset })
+    return { ok: status === 200, data }
   }
 }
