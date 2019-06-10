@@ -11,7 +11,7 @@ import {
 } from './actions.type'
 
 import {
-  SET_AUTH, PURGE_AUTH, ADD_USER, POST_CLEAR
+  SET_AUTH, PURGE_AUTH, ADD_USER, POST_CLEAR, USER_UPDATE
 } from './mutations.type'
 
 const state = {
@@ -118,6 +118,12 @@ const mutations = {
   },
   [ADD_USER](state, user) {
     Vue.set(state.users, user.username, user)
+  },
+  [USER_UPDATE](state, updatedFields) {
+    Vue.set(state.users, updatedFields.id, {
+      ...state.users[updatedFields.id],
+      ...updatedFields
+    })
   }
 }
 

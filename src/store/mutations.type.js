@@ -21,3 +21,4 @@ export const REPLIES_SET = "repliesSet"
 
 // User
 export const ADD_USER = "addUser"
+export const USER_UPDATE = "userUpdate"
