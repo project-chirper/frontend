@@ -1,7 +1,11 @@
 <template>
   <v-toolbar app dense flat color='toolbar'>
     
-    <v-toolbar-title class='headline font-weight-light'>Bitter</v-toolbar-title>
+    <v-toolbar-title class='headline font-weight-light'>
+      <router-link to='/' style='text-decoration:none;' class='white--text' title='Home'>
+        Bitter
+      </router-link>
+    </v-toolbar-title>
     <v-spacer></v-spacer>
 
     <search/>
@@ -52,7 +56,6 @@ export default {
   data() {
     return {
       navListRaw: [
-        { name: 'Home', icon: 'home', route: '/', desc: 'View your timeline' },
         { name: () => this.$store.state.user.data.username, icon: 'person', route: () => `/user/${this.$store.state.user.data.username}`, requiresAuth: true },
         //{ name: 'Logout', icon: 'exit_to_app', click: 'logout', desc: 'Logout', requiresAuth: true },
 
