@@ -14,12 +14,13 @@ function handleResponse(response) {
       router.push({ name: 'login' })
       return true
     case 404:
-      router.push({ name: '404' })
+      router.push('/404')
       return true
     case 500:
       alert('500 Internal Server Error')
       return true
   }
+
   return false
 }
 

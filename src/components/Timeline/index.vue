@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <publisher action='basepost'/>
+      <publisher action='basepost' v-if='self'/>
 
       <v-btn outline round color='tertiary' @click='loadTimeline()'>
         Fetch New Posts
@@ -30,7 +30,7 @@
 		  <v-progress-circular indeterminate class='primary--text'></v-progress-circular>
     </div>
     
-    <first-post v-if='timeline.length === 0 && (from === "public" || from === $store.state.user.data.id)'/>
+    <first-post v-if='timeline.length === 0 && self'/>
 
   </div>
 </template>
@@ -57,7 +57,7 @@ export default {
     Post, Modal, Publisher, FirstPost
   },
   props: {
-    from: { // Which timeline to load
+    from: { // Which timeline to load (user ID)
       type: String,
       default: 'public'
     },
@@ -69,7 +69,6 @@ export default {
   data() {
     return {
       focusedPost: "", // the ID of the currently focused post
-      
       dialog: false, // Controls modal toggle
       loading: false, // Controls loading circle
       canLoadMore: true // Whether we can load more timeline posts or not
@@ -87,6 +86,10 @@ export default {
     // Return focused post
     post: function() {
        return this.getPost(this.focusedPost)
+    },
+    // Whether or not own users profile
+    self: function() {
+      return this.from === "public" || this.from === this.$store.state.user.data.id
     }
   },
   methods: {

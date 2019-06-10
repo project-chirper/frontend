@@ -108,18 +108,18 @@ const actions = {
     } else return false
   },
 
-  async [TOGGLE_POST_LIKE](context, postId) {
-    let ok = await PostService.likePost(postId) // Toggle post like
-    if (ok) {
-      let newStatus = !context.state.posts[postId].hasLiked
+  [TOGGLE_POST_LIKE](context, postId) {
+    PostService.likePost(postId) // Toggle post like
 
-      context.commit(POST_UPDATE, { 
-        id: postId, 
-        hasLiked: newStatus,
-        stats: { ...context.state.posts[postId].stats, likes: context.state.posts[postId].stats.likes + (newStatus ? 1 : -1) }
-      }) // Update post
-      return true
-    } else return false
+    // We do not await for the likePost to make it feel instant.
+
+    let newStatus = !context.state.posts[postId].hasLiked
+    context.commit(POST_UPDATE, { 
+      id: postId, 
+      hasLiked: newStatus,
+      stats: { ...context.state.posts[postId].stats, likes: context.state.posts[postId].stats.likes + (newStatus ? 1 : -1) }
+    }) // Update post
+    return true
   }
 }
 

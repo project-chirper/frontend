@@ -32,7 +32,7 @@
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn class='primary' @click='submitPost()' type='submit'>
+        <v-btn class='primary' @click='submitPost()' type='submit' :loading='loading'>
           {{ submit }}
           <v-icon right>send</v-icon>
         </v-btn>

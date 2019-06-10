@@ -72,8 +72,12 @@ export const router = new Router({
 
     // 404
     {
+      path: "*",
+      redirect: '/404'
+    },
+    {
       name: '404',
-      path: '*',
+      path: '/404',
       component: () => import('./views/404')
     }
   ]
