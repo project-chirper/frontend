@@ -22,7 +22,7 @@ export const router = new Router({
       name: 'login',
       component: () => import('./views/Logreg'),
       props: { action: 'login' },
-      meta: { title: 'Bitter Login', requiresNoAuth: true }
+      meta: { title: 'Login', requiresNoAuth: true }
     },
     // Register page
     {
@@ -30,7 +30,7 @@ export const router = new Router({
       name: 'register',
       component: () => import('./views/Logreg'),
       props: { action: 'register' },
-      meta: { title: 'Bitter Login', requiresNoAuth: true }
+      meta: { title: 'Register', requiresNoAuth: true }
     },
 
     // Profile page
@@ -39,7 +39,7 @@ export const router = new Router({
       name: 'profile',
       props: true, // it is passed as 'username' prop
       component: () => import('./views/Profile'),
-      meta: { title: 'Bitter Profile' },
+      meta: { title: 'Profile' },
       children: [ // This child route is used to automatically load a users post
         {
           name: 'post',
@@ -54,10 +54,9 @@ export const router = new Router({
       name: 'account',
       redirect: '/account/details',
       component: () => import('./views/Account/index.vue'),
-      meta: { title: 'Bitter Account' },
       children: [
-        { name: 'details', path: 'details', component: () => import('./views/Account/Details') },
-        { name: 'display-info', path: 'display-info', component: () => import('./views/Account/DisplayInfo') }
+        { name: 'details', path: 'details', component: () => import('./views/Account/Details'), meta: { title: 'Details' } },
+        { name: 'display-info', path: 'display-info', component: () => import('./views/Account/DisplayInfo'), meta: { title: 'Display Info' } }
       ]
     },
 
@@ -66,7 +65,7 @@ export const router = new Router({
       path: '/verify-email/:uniqueCode',
       name: 'verify-email',
       component: () => import('./views/VerifyEmail'),
-      meta: { title: 'Bitter Verify Email' },
+      meta: { title: 'Verify Email' },
       props: true
     },
 
@@ -78,13 +77,14 @@ export const router = new Router({
     {
       name: '404',
       path: '/404',
+      meta: { title: 'Page not found' },
       component: () => import('./views/404')
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title ? to.meta.title : 'Bitter' // Set a default title if one has not been specified
+  document.title = to.meta.title ? `Bitter - ${to.meta.title}` : 'Bitter' // Set a default title if one has not been specified
 
   // Check for protected routes
   let isAuthed = store.state.user.isAuthed // Whether user is currently authenticated
