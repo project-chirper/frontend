@@ -3,7 +3,7 @@
     <div>
       <publisher action='basepost' v-if='self'/>
 
-      <v-btn outline round color='tertiary' @click='loadTimeline()'>
+      <v-btn outline round color='tertiary' @click='loadTimeline()' :loading='loadingUpdates'>
         Fetch New Posts
         <v-icon right>refresh</v-icon>
       </v-btn>
@@ -71,6 +71,7 @@ export default {
       focusedPost: "", // the ID of the currently focused post
       dialog: false, // Controls modal toggle
       loading: false, // Controls loading circle
+      loadingUpdates: false, // controls update loading circle
       canLoadMore: true // Whether we can load more timeline posts or not
     }
   },
@@ -100,11 +101,15 @@ export default {
 
     // Load initial/more/updated timeline
     async loadTimeline({ loadMore = false } = {}) {
+      let loadUpdates = this.timeline.length && !loadMore // Whether we are loading updates or not
+
       if (loadMore && !this.canLoadMore) return false // We can not load any more posts.
-      this.loading = true // Begin loading
+      loadUpdates ? this.loadingUpdates = true : this.loading = true // Begin loading
       // Fetch a new/more/updated timeline
       let postCount = await this.fetchTimeline({ from: this.from, loadMore })
-      this.loading = false // Finish loading
+      
+      loadUpdates ? setTimeout(() => this.loadingUpdates = false, 800) : this.loading = false // Finish loading
+
       if (postCount < 25 && loadMore) this.canLoadMore = false // If we load more posts less than 25, then there must be no more left to load
     },
 
