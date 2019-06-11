@@ -1,5 +1,7 @@
 <template>
   <v-app dark>
+    <ping/>
+
     <navbar/>
 
     <v-content>
@@ -10,10 +12,11 @@
 
 <script>
 import Navbar from '@/components/Navbar/index'
+import Ping from '@/components/Ping'
 
 export default {
   name: 'App',
-  components: { Navbar }
+  components: { Navbar, Ping }
 }
 </script>
 

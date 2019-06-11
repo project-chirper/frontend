@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import './plugins/vuetify'
+import ping from './plugins/ping'
 import App from './App.vue'
 import router from './router'
 import store from './store/index'
@@ -13,6 +14,7 @@ Vue.config.productionTip = false
 
 // use vueMoment for moment library
 Vue.use(vueMoment) 
+Vue.use(ping) // ping notify plugin
 
 // Initiate the ApiService.
 ApiService.init()

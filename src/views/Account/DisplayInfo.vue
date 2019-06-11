@@ -78,7 +78,12 @@ export default {
       this.loading = true
       let response = await this.editDisplayInfo(this.formData)
       this.loading = false
-      if(typeof response === 'object') this.errors = response; else this.editing = false // Error array
+      if(typeof response === 'object') this.errors = response; else {
+        this.editing = false // Error array
+        this.ping({
+          message: "Display Info updated"
+        })
+      }
     }
   },
   watch: {

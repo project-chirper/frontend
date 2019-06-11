@@ -3,7 +3,7 @@
     <div>
       <publisher action='basepost' v-if='self'/>
 
-      <v-btn outline round color='tertiary' @click='loadTimeline()' :loading='loadingUpdates'>
+      <v-btn outline round color='tertiary' @click='loadTimeline()' :loading='loadingUpdates' v-if='timeline.length'>
         Fetch New Posts
         <v-icon right>refresh</v-icon>
       </v-btn>
