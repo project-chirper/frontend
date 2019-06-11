@@ -1,5 +1,5 @@
 <template>
-	<v-card v-if='loading' class='pa-2 text-xs-center'>
+	<v-card v-if='loading' class='pa-5 text-xs-center'>
   	<v-progress-circular class='ma-0 primary--text' indeterminate></v-progress-circular>
 	</v-card>
 
@@ -14,6 +14,7 @@
       "border-top": parentPostIds.length,
       "border-bottom": post.stats.replies > 0
     }'/>
+
 
     <!-- Replies -->
     <Replies v-if="postId" :postId='postId' @click='(replyId) => changeFocus({ postId: replyId })'/>

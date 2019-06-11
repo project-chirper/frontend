@@ -10,7 +10,7 @@
 
       <v-spacer></v-spacer>
 
-      <follow-btn v-if='view === "Focused"' :isFollowing='this.post.author.isFollowing' :userId='this.post.author.id'/>
+      <follow-btn v-if='view === "Focused"' :isFollowing='this.post.author.isFollowing' :userId='this.post.author.id' :class='{ "mt-2": $vuetify.breakpoint.xs }'/>
 
     </v-card-title>
 
