@@ -7,7 +7,8 @@ import Vue from 'vue'
 
 import {
   LOGIN, LOGOUT, REGISTER, CHECK_AUTH, 
-  TOGGLE_USER_FOLLOW, FETCH_USER, CHECK_EMAIL_VERIFICATION, SEARCH_USER
+  TOGGLE_USER_FOLLOW, FETCH_USER, CHECK_EMAIL_VERIFICATION, SEARCH_USER,
+  EDIT_DISPLAY_INFO
 } from './actions.type'
 
 import {
@@ -101,6 +102,18 @@ const actions = {
   async [SEARCH_USER](context, { username, offset }) {
     let { ok, data } = await UserService.searchUser(username, offset)
     if (ok) return data; else return false
+  },
+
+  async [EDIT_DISPLAY_INFO](context, editedFields) {
+    let { ok, errors } = await UserService.editDisplayInfo(editedFields)
+    if (ok) {
+      // Update profile
+      context.state.data.profile = {
+        ...context.state.data.profile,
+        ...editedFields
+      }
+      return true
+    } else return errors
   }
 }
 

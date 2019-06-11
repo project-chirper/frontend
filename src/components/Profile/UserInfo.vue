@@ -3,7 +3,7 @@
     <v-card-title class='primary'>
       <div>
         <p class='title ma-0'>{{ user.username }}</p>
-        <p class="body grey--text text--lighten-2 pt-1 ma-0">{{ user.profile.bio }}</p>
+        <p class="body grey--text text--lighten-2 pt-1 ma-0" style='word-break:break-word;'>{{ user.profile.bio }}</p>
         <span v-if='user.followsYou' class='caption tertiary--text'>follows you</span>
       </div>
     </v-card-title>

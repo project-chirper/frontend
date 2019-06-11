@@ -31,5 +31,16 @@ export default {
   async searchUser(username, offset = 0) {
     let { status, data } = await ApiService.query('user/search-user', { username, offset })
     return { ok: status === 200, data }
+  },
+
+  // Edit display info
+  async editDisplayInfo(editedFields) {
+    try {
+      let { status, data } = await ApiService.put('user/display-info', editedFields)
+      return { ok: status === 200, data }
+    } catch (err) {
+      if (err.response.status === 422) return { ok: 0, errors: err.response.data.errors }
+      else throw (err)
+    }
   }
 }
