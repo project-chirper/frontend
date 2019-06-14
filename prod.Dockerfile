@@ -5,6 +5,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 ENV VUE_APP_API /api
+ENV VUE_APP_SOCKET /socket
 RUN npm run build
 
 # production stage

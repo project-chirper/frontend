@@ -23,7 +23,25 @@ export default {
   },
 
   async checkEmailVerification(uniqueCode) {
-    let { status } = await ApiService.get(`user/verify-email/${uniqueCode}`)
+    let { status } = await ApiService.get(`user/account/verify-email/${uniqueCode}`)
+    return status === 200
+  },
+
+  async requestEmailVerification() {
+    let { status } = await ApiService.get('user/request/email-verification')
+    return status === 200
+  },
+
+  async requestRecoverPassword(email) {
+    let { status } = await ApiService.post('user/request/recover-password', { email })
+    return status === 200
+  },
+
+  async resetPassword(password, uniqueCode) {
+    let { status } = await ApiService.post('user/account/recover-password', {
+      password,
+      uniqueCode
+    })
     return status === 200
   },
 
@@ -36,7 +54,7 @@ export default {
   // Edit display info
   async editDisplayInfo(editedFields) {
     try {
-      let { status, data } = await ApiService.put('user/display-info', editedFields)
+      let { status, data } = await ApiService.put('user/account/display-info', editedFields)
       return { ok: status === 200, data }
     } catch (err) {
       if (err.response.status === 422) return { ok: 0, errors: err.response.data.errors }

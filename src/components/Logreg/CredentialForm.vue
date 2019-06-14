@@ -54,6 +54,8 @@
           aria-label='new-password'>
         </v-text-field>
 
+        <request-password v-if='type === "login"'/>
+
         <v-alert :value='errors.length' class='my-3' type='error'>
           <v-chip v-for='error in errors' :key='error' class='error'>{{ error }}</v-chip>
         </v-alert>
@@ -80,9 +82,14 @@
 <script>
 import { LOGIN, REGISTER } from '@/store/actions.type'
 
+import RequestPassword from './RequestPassword'
+
 export default {
   props: {
     type: String // login or register
+  },
+  components: {
+    RequestPassword
   },
   data() {
     return {

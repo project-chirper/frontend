@@ -9,10 +9,12 @@
   "dependencies": {
     "@mattl019/objectset": "^1.2.2",
     "axios": "^0.18.0",
+    "socket.io-client": "^2.2.0",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.0.3",
+    "vue-socket.io": "^3.0.7",
     "vuetify": "^1.5.5",
     "vuex": "^3.1.1"
   },

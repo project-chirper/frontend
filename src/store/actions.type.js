@@ -8,6 +8,9 @@ export const LOGOUT = "logout";
 export const REGISTER = "register";
 export const CHECK_AUTH = "checkAuth";
 export const CHECK_EMAIL_VERIFICATION = "checkEmailVerification"
+export const REQUEST_EMAIL_VERIFICATION = "requestEmailVerification"
+export const REQUEST_RECOVER_PASSWORD = "requestRecoverPassword"
+export const RESET_PASSWORD = "resetPassword"
 
 // Timeline & Posts
 export const FETCH_TIMELINE = "fetchTimeline"

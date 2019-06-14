@@ -31,7 +31,10 @@
 
         <div class='mt-3 accent--text'>
           <p v-if='user.email.verified'>Your email address is verified <v-icon color='accent'>verified_user</v-icon></p>
-          <p v-else>Your email address is not verified. Check your email for a verification link.</p>
+          <p v-else>Your email address is not verified. 
+            <a @click='verifyEmail' v-if='!requestedEmail'>Request an email verification link.</a>
+            <span v-else class='primary--text'>Email verification link sent. Please check your spam folder if you can not find it.</span>
+          </p>
         </div>
 
       </div>
@@ -53,13 +56,30 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import { REQUEST_EMAIL_VERIFICATION } from '@/store/actions.type'
+
 export default {
+  data() {
+    return {
+      requestedEmail: false
+    }
+  },
   computed: {
     user: function() {
       return this.$store.state.user.data
     },
     dateCreated: function() {
       return `${ this.$moment(this.user.dateCreated).format("MMMM Do YYYY")} (${ this.$moment(this.user.dateCreated).fromNow() })`
+    }
+  },
+  methods: {
+    ...mapActions({
+      requestEmailVerification: REQUEST_EMAIL_VERIFICATION
+    }),
+    verifyEmail() {
+      this.requestEmailVerification()
+      this.requestedEmail = true
     }
   }
 }

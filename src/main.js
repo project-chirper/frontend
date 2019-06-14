@@ -1,9 +1,10 @@
 import Vue from 'vue'
-import './plugins/vuetify'
-import ping from './plugins/ping'
 import App from './App.vue'
 import router from './router'
 import store from './store/index'
+
+import './plugins/vuetify'
+import ping from './plugins/ping'
 
 // Required imports
 import vueMoment from 'vue-moment'

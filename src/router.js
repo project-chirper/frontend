@@ -54,6 +54,7 @@ export const router = new Router({
       name: 'account',
       redirect: '/account/details',
       component: () => import('./views/Account/index.vue'),
+      meta: { requiresAuth: true },
       children: [
         { name: 'details', path: 'details', component: () => import('./views/Account/Details'), meta: { title: 'Details' } },
         { name: 'display-info', path: 'display-info', component: () => import('./views/Account/DisplayInfo'), meta: { title: 'Display Info' } }
@@ -64,8 +65,17 @@ export const router = new Router({
     {
       path: '/verify-email/:uniqueCode',
       name: 'verify-email',
-      component: () => import('./views/VerifyEmail'),
+      component: () => import('./views/Account/VerifyEmail'),
       meta: { title: 'Verify Email' },
+      props: true
+    },
+
+    // Reset Password form
+    {
+      path: '/reset-password/:uniqueCode',
+      name: 'reset-password',
+      component: () => import ('./views/Account/ResetPassword'),
+      meta: { title: 'Reset Password' },
       props: true
     },
 

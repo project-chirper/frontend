@@ -7,7 +7,7 @@ import Vue from 'vue'
 
 import {
   LOGIN, LOGOUT, REGISTER, CHECK_AUTH, 
-  TOGGLE_USER_FOLLOW, FETCH_USER, CHECK_EMAIL_VERIFICATION, SEARCH_USER,
+  TOGGLE_USER_FOLLOW, FETCH_USER, CHECK_EMAIL_VERIFICATION, SEARCH_USER, REQUEST_EMAIL_VERIFICATION, REQUEST_RECOVER_PASSWORD, RESET_PASSWORD,
   EDIT_DISPLAY_INFO
 } from './actions.type'
 
@@ -96,6 +96,21 @@ const actions = {
 
   async [CHECK_EMAIL_VERIFICATION](context, uniqueCode) {
     let ok = await UserService.checkEmailVerification(uniqueCode)
+    if (ok) return true; else return false
+  },
+
+  async [REQUEST_EMAIL_VERIFICATION](context) {
+    let ok = await UserService.requestEmailVerification()
+    if (ok) return true; else return false
+  },
+
+  async [REQUEST_RECOVER_PASSWORD](context, email) {
+    let ok = await UserService.requestRecoverPassword(email)
+    if (ok) return true; else return false
+  },
+
+  async [RESET_PASSWORD](context, { password, uniqueCode }) {
+    let ok = await UserService.resetPassword(password, uniqueCode)
     if (ok) return true; else return false
   },
 
